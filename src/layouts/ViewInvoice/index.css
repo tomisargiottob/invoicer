@@ -1,0 +1,29 @@
+.view-invoice-card-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background-color: #C9D6E1;
+  min-height: 100vh;
+  min-width: 800px;
+}
+
+.view-invoice-title{
+  display: flex;
+  justify-content: center;
+}
+
+.view-invoice-card-body{
+  padding: 15px 0px;
+}
+
+.view-invoice-card-item {
+  display: flex;
+  margin: 35px 0px;
+}
+
+.view-invoice-card-footer{
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-around;
+}

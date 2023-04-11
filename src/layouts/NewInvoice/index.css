@@ -1,0 +1,39 @@
+.new-invoice-card-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background-color: #C9D6E1;
+  min-height: 100vh;
+  min-width: 800px;
+}
+
+.new-invoice-card-title {
+  display: flex;
+  justify-content: center;
+}
+
+.new-invoice-card-body {
+  padding: 10px 0px;
+}
+
+.new-invoice-card-body-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 10px 0px 0px 0px;
+}
+
+.new-invoice-card-footer {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-around;
+}
+
+.new-invoice-card-container .card-content{
+  padding: 25px;
+}
+
+.amount-section {
+  gap: 100px;
+}

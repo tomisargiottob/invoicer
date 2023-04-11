@@ -1,0 +1,53 @@
+.navbar-container {
+  background-color: #0D658B;
+  padding: 15px 35px;
+  color: #FFFFFF;
+  font-weight: bold;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0px 100px 80px rgba(0, 0, 0, 0.07), 0px 22.3363px 17.869px rgba(0, 0, 0, 0.0417275), 0px 6.6501px 5.32008px rgba(0, 0, 0, 0.0282725);
+  border-radius: 0px 0px 7px 7px;
+
+}
+
+.navbar-title {
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.navbar-user-container {
+  display: flex;
+  gap: 25px;
+  align-items: center;
+  cursor: pointer;
+}
+
+.navbar-user-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.navbar-user-info-cuit {
+  font-size: 15px;
+}
+
+.navbar-user-icon {
+  color: #0D658B;
+  background-color: #FFFFFF;
+  padding: 15px;
+  border-radius: 25px;
+}
+
+.modal-backdrop{
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: rgba(255, 255, 255, 0.041);
+  height: 100%;
+  width: 100vw;
+  z-index: 0;
+}

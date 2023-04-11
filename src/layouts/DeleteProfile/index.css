@@ -1,0 +1,33 @@
+.delete-profile-card-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background-color: #C9D6E1;
+  height: 100vh;
+  min-width: 800px;
+}
+
+.delete-profile-card-title {
+  display: flex;
+  justify-content: center;
+}
+
+.delete-profile-card-body {
+  padding: 15px 0px;
+}
+
+.delete-profile-card-text{
+  margin: 0 auto;
+  font-weight: bold;
+  text-align: center;
+  max-width: 500px;
+  font-size: 17px;
+  margin-bottom: 20px;
+}
+
+.delete-profile-card-footer {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-around;
+}

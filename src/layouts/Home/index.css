@@ -1,0 +1,79 @@
+.container {
+  background-color: #C9D6E1;
+  min-height: 100vh;
+  min-width: 800px;
+}
+
+.home-card-detail-container{
+  display: flex;
+  justify-content: space-evenly;
+  margin-top: 35px;
+}
+
+.home-card-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 35px;
+}
+
+.home-card-title-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.home-card-title-options{
+  display: flex;
+  gap: 35px;
+}
+
+.home-delete-user{
+  display: flex;
+  justify-content: center;
+  margin-top: 100px;
+}
+
+.empty-state-container{
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  height: 80vh;
+  width: 300px;
+  margin: 0 auto;
+}
+.empty-state {
+  text-align: center;
+}
+
+.empty-state button{
+  cursor: pointer;
+  background-color: #0D658B;
+  color: white;
+  border-radius: 5px;
+  font-family: "Montserrat", sans-serif !important;
+  padding: 10px;
+  border: 1px solid rgb(66, 66, 76);
+  box-shadow: 0px 100px 80px rgba(0, 0, 0, 0.07), 0px 22.3363px 17.869px rgba(0, 0, 0, 0.0417275), 0px 6.6501px 5.32008px rgba(0, 0, 0, 0.0282725);
+}
+.empty-state svg {
+  background-color: transparent;
+  height: 100px;
+}
+
+.table-item-data svg {
+  cursor: pointer;
+}
+.balance-icon{
+  cursor: pointer;
+  margin-right: 10px;
+}
+.table-pagination-button {
+  cursor: pointer;
+}
+
+.name-container{
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}

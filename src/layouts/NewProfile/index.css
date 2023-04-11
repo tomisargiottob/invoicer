@@ -1,0 +1,32 @@
+.new-profile-card-container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background-color: #C9D6E1;
+  min-height: 100vh;
+  min-width: 800px;
+}
+
+.new-profile-card-title{
+  display: flex;
+  justify-content: center;
+}
+
+.new-profile-card-body{
+  padding: 15px 0px;
+}
+
+.new-profile-card-body-item{
+  display: flex;
+  justify-content: space-between;
+  gap: 45px;
+  padding: 0px 0px 0px 0px;
+  margin-bottom: 5px;
+}
+
+.new-profile-card-footer{
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-around;
+}

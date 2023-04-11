@@ -1,0 +1,26 @@
+.button {
+  background-color: #FFFFFF;
+  outline: 2px solid #0D658B;
+  border: 0px;
+  padding: 16px 43px;
+  border-radius: 7px;
+
+  font-weight: bold;
+  color: #0D658B;
+  font-size: 16px;
+
+  cursor: pointer;
+}
+
+.button:hover{
+  color: #FFFFFF;
+  background-color: #0D658B;
+}
+
+.button:disabled{
+  color: gray;
+  background-color: white;
+  cursor:not-allowed;
+  outline: 2px solid gray;
+}
+

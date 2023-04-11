@@ -1,0 +1,24 @@
+.input-container{
+  display: flex;
+  flex-direction: column;
+}
+
+.input-label{
+  color: #5C89A7;
+  font-weight: bold;
+  font-size: 16px;
+  line-height: 40px;
+}
+
+.input{
+  border: 1px solid #5C89A7;
+  border-radius: 7px;
+  padding: 15px 15px;
+  font-weight: bold;
+  font-size: 15px;
+}
+
+.input:focus-visible{
+  outline: 0px;
+  border: 2px solid #0D658B;;
+}

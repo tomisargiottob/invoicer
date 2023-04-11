@@ -1,0 +1,23 @@
+.status-label{
+  padding: 7px;
+  color: white;
+  border-radius: 7px;
+  font-weight: bold;
+  width: 100px;
+}
+
+.status-label.status-label-PENDING{
+  background-color: #000;
+}
+
+.status-label.status-label-PROCESSING {
+  background-color: #FFA800;
+}
+
+.status-label.status-label-PROCESSED {
+  background-color: #009821;
+}
+
+.status-label.status-label-REJECTED {
+  background-color: #FF0000;
+}
