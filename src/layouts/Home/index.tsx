@@ -100,6 +100,7 @@ const Home = () => {
   useEffect(() => {
     if(!cuit.id) {
       setSelectedProfile(undefined)
+      setUserAuthenticated(false)
     } else {
       setSelectedProfile(cuit)
     }
