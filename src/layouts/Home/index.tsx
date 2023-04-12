@@ -39,6 +39,9 @@ const Home = () => {
   const [finder, setFinder] = useState('');
   const [loading, setLoading] = useState(false)
   const [loadingInvoices, setLoadingInvoices] = useState(false)
+  const [balanceFetched, setBalanceFetched] = useState(false)
+  const [userAuthenticated, setUserAuthenticated] = useState(false)
+
   const user = useAppSelector((state) => state.user)
   const cuit = useAppSelector((state) => state.cuit)
 
@@ -77,7 +80,8 @@ const Home = () => {
 
   useEffect(() => {
     const onSelectedProfile = async () => {
-      if(selectedProfile && Object.keys(selectedProfile).length && (!selectedProfile.token || new Date(cuit?.tokenExpires) <= new Date())) {
+      if(selectedProfile && Object.keys(selectedProfile).length && (!selectedProfile.token || new Date(cuit?.tokenExpires) <= new Date()) && !userAuthenticated) {
+        setUserAuthenticated(true)
         await SystemAuth.authenticate(user, selectedProfile, dispatch, setActiveCuitAccount)
         if(!cuit.invoices.length &&!loadingInvoices) {
           await fetchInvoices({})
@@ -122,7 +126,8 @@ const Home = () => {
   useEffect(() => {
     const loadBalance = async () => {
       let balances;
-      if(selectedProfile?.id && cuit.id && !cuit.balances?.length) {
+      if(selectedProfile?.id && cuit.id && !balanceFetched) {
+        setBalanceFetched(true)
         balances = await getBalances({user, cuit: cuit.id})
         dispatch(setCuitBalances({balances}))
       }
