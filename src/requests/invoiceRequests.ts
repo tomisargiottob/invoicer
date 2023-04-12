@@ -12,10 +12,9 @@ export async function getNextInvoiceNumber({user, cuit, invoiceType}: {user:User
 }
 
 export async function createInvoice({user, cuit, invoice}: {user:User, cuit: string, invoice: Invoice}) {
-    if(invoice._id) {
-        delete invoice._id
-    }
-    const response = await api.post(`/organizations/${user.organization}/cuits/${cuit}/invoices`,{invoiceData:invoice}, {headers: {Authorization: user.token}})
+    const invoiceCopy = {...invoice}
+    delete invoiceCopy._id
+    const response = await api.post(`/organizations/${user.organization}/cuits/${cuit}/invoices`,{invoiceData:invoiceCopy}, {headers: {Authorization: user.token}})
     return response.data
 }
 

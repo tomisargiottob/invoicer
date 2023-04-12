@@ -24,6 +24,7 @@ export interface CuitAccount extends Pick<CuitAccountInput, Exclude<keyof CuitAc
     sign: string;
     totalInvoices: number;
     currentInvoice?: string;
+    updated?: number
 }
 
 interface BalanceData {
@@ -45,7 +46,8 @@ const initialState: CuitAccount = {
     invoices: [],
     sign: '',
     totalInvoices: 0,
-    currentInvoice: undefined
+    currentInvoice: undefined,
+    updated: Date.now()
 }
 
 export const CuitSlice = createSlice({
@@ -73,6 +75,7 @@ export const CuitSlice = createSlice({
             if(updatedInvoice) {
                 updatedInvoice.status= action.payload.status
             }
+            state.updated = Date.now()
         },
         setCuitCredentials: (state, action: PayloadAction<({sign: string, token: string, tokenExpires: string})>) => {
             state.token = action.payload.token
@@ -94,6 +97,7 @@ export const CuitSlice = createSlice({
             state.sign = initialState.sign
             state.tokenExpires = initialState.tokenExpires
             state.salePoint = initialState.salePoint
+            state.balances = initialState.balances
         },
         setCurrentInvoice: (state, action: PayloadAction<{invoiceNumber?: string}>) => {
             state.currentInvoice = action.payload.invoiceNumber
