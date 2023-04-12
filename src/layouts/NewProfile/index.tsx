@@ -16,6 +16,8 @@ import {  CuitAccountInput } from '../../store/CuitSlice';
 import { useDispatch } from 'react-redux';
 import { setUserCuitAccounts } from '../../store/UserSlice';
 import TextArea from '../../components/TextArea';
+import Toastify from 'toastify-js';
+import 'toastify-js/src/toastify.css';
 
 const NewProfile = () => {
   const navigate = useNavigate();
@@ -88,14 +90,32 @@ const NewProfile = () => {
       verifyPrivateKey(privateKey,validationErrors)
       if(validationErrors.length) {
         setErrors(validationErrors)
-        throw validationErrors
+        throw new Error('Por favor revise los errores del formulario')
       }
       await createCuit({user, cuit: profile})
       const cuits = await getUserCuits({user})
       dispatch(setUserCuitAccounts({cuitAccounts: cuits}))
       navigate('/');
-    } catch (error) {
+      Toastify({
+        text: 'Se ha agregado correctamente el cuit',
+        style: {
+          background: 'green',
+          color: 'white',
+        },
+        position: 'center',
+        duration: 3000,
+      }).showToast();
+    } catch (error: any) {
       console.log(error)
+      Toastify({
+        text: error.message || 'Error desconocido vuelva a intentarlo',
+        style: {
+          background: 'red',
+          color: 'white',
+        },
+        position: 'center',
+        duration: 3000,
+      }).showToast();
     }
   };
 
