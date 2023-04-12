@@ -3,6 +3,24 @@ import { CuitAccount } from "../../store/CuitSlice";
 import { convertDateToDDMMAAAASeparated2 } from "../../utils/utils";
 import './index.css';
 
+export const invoiceTypes = {
+  C: 11,
+  A:1,
+  B: 6,
+  NOTA_CREDITO_A: 3,
+  NOTA_CREDITO_B: 8,
+  NOTA_CREDITO_C: 13,
+}
+
+const invoiceCodes = {
+  C: 'C',
+  A:'A',
+  B: 'B',
+  NOTA_CREDITO_A: 'A',
+  NOTA_CREDITO_B: 'B',
+  NOTA_CREDITO_C: 'C',
+}
+
 function PDFDownload({invoice, cuit}: {invoice: Invoice, cuit: CuitAccount}) {
     const invoiceDate = new Date(invoice.date)
     const perdesDate = new Date(
@@ -15,6 +33,13 @@ function PDFDownload({invoice, cuit}: {invoice: Invoice, cuit: CuitAccount}) {
         invoiceDate.getMonth() + 1,
         -1
       );
+    const cod = invoiceTypes[invoice.invoiceType]
+    const invoiceType =
+      invoice.invoiceType === 'A' ||
+      invoice.invoiceType === 'B' ||
+      invoice.invoiceType === 'C'
+        ? 'FACTURA'
+        : 'NOTA CREDITO'
     return (
         <div className='pdf-download'>
             <div className="borderDiv originalLabel">
@@ -22,7 +47,8 @@ function PDFDownload({invoice, cuit}: {invoice: Invoice, cuit: CuitAccount}) {
             </div>
             <div className="invoiceHeaderContainer">
             <div className="invoiceTypeContainer">
-                <div className="invoiceType">Factura {invoice.invoiceType}</div>
+              <div className="invoiceType">{invoiceCodes[invoice.invoiceType]}</div>
+              <div>COD. {cod}</div>
             </div>     
           <div className="invoiceHeaderContent">
             <div className="fromName">{cuit.fullname}</div>
@@ -33,6 +59,7 @@ function PDFDownload({invoice, cuit}: {invoice: Invoice, cuit: CuitAccount}) {
               </div>
           </div>
           <div className="invoiceHeaderContent">
+            <div className="fromName">{invoiceType}</div>
             <div className="inf">
               <div className="label">Punto de Venta: {cuit.salePoint} - Comp. Nro: {invoice.number}</div>
               <div className="label">Fecha Emisión: <span className="data">{convertDateToDDMMAAAASeparated2(invoiceDate)}</span></div>
