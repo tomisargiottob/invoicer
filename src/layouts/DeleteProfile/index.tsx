@@ -9,6 +9,9 @@ import React, { useEffect, useState } from 'react';
 import Profile from '../../class/Profile/Profile';
 import { useAppSelector } from '../../store/store';
 import { useDispatch } from 'react-redux';
+import { getUserCuits, removeCuit } from '../../requests/cuitRequests';
+import { setUserCuitAccounts } from '../../store/UserSlice';
+import { unsetCuitAccount } from '../../store/CuitSlice';
 
 const DeleteProfile = () => {
   const navigate = useNavigate();
@@ -18,9 +21,12 @@ const DeleteProfile = () => {
 
   const user = useAppSelector((state) => state.user)
 
-  const onDeleteUser = () => {
-    console.log('delete user')
+  const onDeleteUser = async () => {
+    await removeCuit({ user, id: cuit.id })
+    dispatch(unsetCuitAccount())
     navigate('/');
+    const cuits = await getUserCuits({user})
+    dispatch(setUserCuitAccounts({cuitAccounts: cuits}))
   };
 
 
@@ -33,7 +39,7 @@ const DeleteProfile = () => {
         <div className="delete-profile-card-body">
           <p className="delete-profile-card-text">
             Esta a punto de eliminar el perfil {cuit?.fullname} (
-            {cuit?.cuit}). Toda la información será borrada incluyend facturas y balances creados.
+            {cuit?.cuit}). Toda la información será borrada incluyendo facturas y balances creados.
           </p>
           <p className="delete-profile-card-text">
             ¿Esta seguro que desea continuar?
