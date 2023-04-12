@@ -9,11 +9,16 @@ const api = axios.create({
 api.interceptors.response.use((response) => {
     return response
 }, (error) => {
-    return error
+    throw new Error(error?.response?.data?.message || 'Error deconocido, vuelva a intentarlo')
 })
 
 export async function createCuit({user, cuit}: {user:User, cuit: CuitAccountInput}) {
     const response = await api.post(`/organizations/${user.organization}/cuits`, cuit, {headers: {Authorization: user.token}});
+    return response.data
+}
+
+export async function removeCuit({user, id}: {user:User, id: string}) {
+    const response = await api.delete(`/organizations/${user.organization}/cuits/${id}`, {headers: {Authorization: user.token}});
     return response.data
 }
 
