@@ -111,7 +111,7 @@ const ImportInvoices = () => {
         });
       });
 
-      dispatch(setCuitInvoices({ invoices: [...dataFormatted, ...cuit.invoices], totalInvoices: cuit.totalInvoices + dataFormatted.length }))
+      dispatch(setCuitInvoices({ invoices: [...[...dataFormatted].reverse(), ...cuit.invoices], totalInvoices: cuit.totalInvoices + dataFormatted.length }))
 
       navigate('/');
       
