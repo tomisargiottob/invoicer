@@ -20,7 +20,7 @@
 input:focus {
   outline: none !important;
   box-shadow: none !important;
-  /* border-bottom: 1px solid rgba(255, 255, 255, 0.784) !important; */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.784) !important;
 }
 
 label,
@@ -42,6 +42,7 @@ a {
 }
 
 .btn-login button{
+  border: 1px solid white;
   border-radius: 5px;
   padding:  5px 10px;
   margin-bottom: 10px;
@@ -49,6 +50,17 @@ a {
 }
 .btn-login button:hover{
   background-color: rgb(51, 51, 93);
+  border: 1px solid rgb(51, 51, 93);
+
   color: white
+}
+
+.logo-container{
+  height: 200px;
+  margin-bottom: 40px;
+}
+
+.logo-container img{
+  height: 100%;
 }
 

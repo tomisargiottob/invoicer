@@ -41,9 +41,10 @@ function Login() {
       {loading && <Spinner />}
       <div className="row justify-content-center align-items-center w-100 h-100">
         <div className="col-md-4">
+          <div className="logo-container">
+            <img src="Facturama-white-complete.png" alt="Facturama logo" />
+          </div>
           <Form layout="vertical" onFinish={onFinish}>
-            <h1>LOGIN</h1>
-
             <Form.Item label="Email" name="email" rules={[ { message: "Please enter your email!", required: true } ]}>
               <Input autoComplete="on" />
             </Form.Item>
@@ -54,11 +55,11 @@ function Login() {
             <div className="d-flex justify-content-between align-items-center">
               <div className="btn-login">
                 <button className="btn btn-outline-light" type="submit">
-                  LOGIN
+                  Iniciar Sesión
                 </button>
               </div>
               <Link to="/register" className="linkTo">
-                Not Registered Yet , Click Here To Register
+                ¿Aún no registrado?, haz click para registrarte
               </Link>
             </div>
           </Form>
