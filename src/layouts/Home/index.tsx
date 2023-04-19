@@ -101,6 +101,7 @@ const Home = () => {
     if(!cuit.id) {
       setSelectedProfile(undefined)
       setUserAuthenticated(false)
+      setBalanceFetched(false)
     } else {
       setSelectedProfile(cuit)
     }
