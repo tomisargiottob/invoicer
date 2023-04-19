@@ -7,6 +7,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "vite",
     "build": "tsc && vite build",
+    "client-s3-deploy": "aws s3 sync dist/ s3://facturama-frontend-deployment --profile deploy-user",
+    "client-cloudfront-invalidation": "aws cloudfront create-invalidation --distribution-id E10MEG1QDY8NOW  --paths '/*' --profile deploy-user",
+    "client-deploy": "npm run build && npm run client-s3-deploy && npm run client-cloudfront-invalidation",
     "preview": "vite preview"
   },
   "keywords": [],
