@@ -13,6 +13,7 @@ import React from 'react'
 import PrivateRoute from './components/PrivateRoute/PrivateRoute';
 import Login from './layouts/Login/Login';
 import Register from './layouts/Register/Register';
+import Instructions from './layouts/Instructions';
 
 export default function App() {
   return (
@@ -29,6 +30,7 @@ export default function App() {
         <Route path="/importBalance" element={<PrivateRoute><ImportBalance /></PrivateRoute>} />
         <Route path="/editInvoice" element={<PrivateRoute><EditExistInvoice /></PrivateRoute>} />
         <Route path="/viewBalance" element={<PrivateRoute><ViewBalance /></PrivateRoute>} />
+        <Route path="/instructions" element={<Instructions />} />
       </Routes>
     </Router>
   );
