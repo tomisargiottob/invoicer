@@ -1,14 +1,14 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import Invoice from "../class/Invoice/Invoice";
-import InvoiceTypes from "../class/Invoice/types/InvoiceTypes";
 import StatusTypes from "../class/Invoice/types/StatusTypes";
+import { RegisterTypes } from "../class/Profile/types/RegisterTypes";
 
 export interface CuitAccountInput {
     id?: string;
     fullname: string;
     address: string;
     cuit: string,
-    invoiceType: InvoiceTypes,
+    registerType: RegisterTypes,
     salePoint: string,
     initAct: string,
     certificate: string,
@@ -36,7 +36,7 @@ const initialState: CuitAccount = {
     id: '',
     fullname: '',
     cuit: '',
-    invoiceType: InvoiceTypes.C,
+    registerType: RegisterTypes.MONOTRIBUTO,
     initAct: '',
     salePoint: '',
     address: '',
@@ -58,7 +58,7 @@ export const CuitSlice = createSlice({
             state.id = action.payload.cuit.id!;
             state.fullname = action.payload.cuit.fullname
             state.address = action.payload.cuit.address
-            state.invoiceType = action.payload.cuit.invoiceType
+            state.registerType = action.payload.cuit.registerType
             state.cuit = action.payload.cuit.cuit
             state.initAct = action.payload.cuit.initAct
             state.salePoint = action.payload.cuit.salePoint
@@ -89,7 +89,7 @@ export const CuitSlice = createSlice({
             state.id = initialState.id!;
             state.fullname = initialState.fullname
             state.address = initialState.address
-            state.invoiceType = initialState.invoiceType
+            state.registerType = initialState.registerType
             state.cuit = initialState.cuit
             state.initAct = initialState.initAct
             state.invoices = initialState.invoices

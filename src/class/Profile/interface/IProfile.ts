@@ -1,10 +1,10 @@
-import InvoiceTypes from '../../Invoice/types/InvoiceTypes';
+import { RegisterTypes } from '../types/RegisterTypes';
 import IBalance from './IBalance';
 
 interface IProfile {
   readonly fullname: string;
   readonly cuit: string;
-  readonly invoiceType: InvoiceTypes;
+  readonly registerType: RegisterTypes;
   readonly salePoint: string;
   readonly selected?: boolean;
   readonly balance?: Array<IBalance>;

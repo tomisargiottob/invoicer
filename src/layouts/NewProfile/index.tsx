@@ -1,5 +1,3 @@
-import Profile from '../../class/Profile/Profile';
-import InvoiceTypes from '../../class/Invoice/types/InvoiceTypes';
 import Button from '../../components/Button';
 import Card from '../../components/Card';
 import ErrorMessage from '../../components/ErrorMessage';
@@ -18,12 +16,15 @@ import { setUserCuitAccounts } from '../../store/UserSlice';
 import TextArea from '../../components/TextArea';
 import Toastify from 'toastify-js';
 import 'toastify-js/src/toastify.css';
+import Dropzone from 'react-dropzone';
+import LabelValue from '../../components/LabelValue';
+import { RegisterTypes } from '../../class/Profile/types/RegisterTypes';
 
 const NewProfile = () => {
   const navigate = useNavigate();
   const [fullname, setFullName] = useState('');
   const [cuit, setCuit] = useState('');
-  const [invoiceType, setInvoiceType] = useState<ISelectItemProps | null>(null);
+  const [registerType, setRegisterType] = useState<ISelectItemProps | null>(null);
   const [salePoint, setSalePoint] = useState('');
   const [initAct, setInitAct] = useState(new Date());
   const [address, setAddress] = useState('');
@@ -80,8 +81,8 @@ const NewProfile = () => {
       validationErrors.push('Debe tener un Cuit / Cuil valido (XX-XXXXXXXX-X)');
     if (!RegExp(/[0-9]{5}/g).test(profile.salePoint))
       validationErrors.push('Debe tener un Punto de venta (5 digitos)');
-    if (!profile.invoiceType)
-      validationErrors.push('Debe tener un tipo de comprobante valido.');
+    if (!profile.registerType)
+      validationErrors.push('Debe tener un tipo de registro valido.');
   }
 
   const [errors, setErrors] = useState<Array<string> | null>(null);
@@ -94,7 +95,7 @@ const NewProfile = () => {
       const profile: CuitAccountInput = {
         fullname,
         cuit,
-        invoiceType: InvoiceTypes[invoiceType?.value as InvoiceTypes],
+        registerType: RegisterTypes[registerType?.value as RegisterTypes],
         salePoint,
         address,
         initAct: initAct.toISOString(),
@@ -164,18 +165,17 @@ const NewProfile = () => {
               onChange={(event) => setSalePoint(event.target.value)}
             />
             <Select
-              label="TIPO DE COMPROBANTE"
+              label="TIPO DE REGISTRO"
               items={[
-                { value: 'A', message: 'FACTURA A' },
-                { value: 'B', message: 'FACTURA B' },
-                { value: 'C', message: 'FACTURA C' },
+                { value: 'MONOTRIBUTO', message: 'Monotributista' },
+                { value: 'RESPONSABLE INSCRIPTO', message: 'Responsable inscripto' },
               ]}
               containerStyle={{ width: '25%' }}
               onSelect={(selected: ISelectItemProps) => {
-                setInvoiceType(selected);
+                setRegisterType(selected);
               }}
             >
-              {invoiceType?.message || 'SELECCIONAR'}
+              {registerType?.message || 'SELECCIONAR'}
             </Select>
             <Input
               label="INICIO ACT."
