@@ -21,10 +21,12 @@ import { createInvoice, getInvoices, getNextInvoiceNumber } from '../../requests
 import { setCuitBalances, setCuitInvoices } from '../../store/CuitSlice';
 import { useDispatch } from 'react-redux';
 import { getBalances } from '../../requests/balanceRequests';
+import { RegisterTypes } from '../../class/Profile/types/RegisterTypes';
 
 const NewInvoice = () => {
   const navigate = useNavigate();
   const [number, setNumber] = useState(0);
+  const [invoiceType, setInvoiceType] = useState<InvoiceTypes | null>(null)
   const [date, setDate] = useState<Date>();
   const [destinatary, setDestinatary] = useState('');
   const [destinataryDocumentType, setDestinataryDocumentType] =
@@ -43,7 +45,7 @@ const NewInvoice = () => {
   useEffect(() => {
     const searchInvoiceNumber = async () => {
       try {
-        const data = await getNextInvoiceNumber({user, cuit: cuit.id, invoiceType: cuit.invoiceType})
+        const data = await getNextInvoiceNumber({user, cuit: cuit.id, invoiceType: invoiceType! })
         setNumber(
           data.nextInvoiceNumber
         );
@@ -60,10 +62,10 @@ const NewInvoice = () => {
         console.error(err);
       }
     };
-    if(!number) {
+    if(invoiceType) {
       searchInvoiceNumber();
     }
-  }, [number]);
+  }, [invoiceType]);
 
   const addInvoice = async () => {
     try {
@@ -79,7 +81,7 @@ const NewInvoice = () => {
         units,
         unitValue,
         total,
-        invoiceType: InvoiceTypes[cuit.invoiceType as keyof typeof InvoiceTypes],
+        invoiceType: invoiceType!,
         status: StatusTypes.PENDING,
       });
 
@@ -113,13 +115,29 @@ const NewInvoice = () => {
               value={number.toString().padStart(8, '0')}
               containerStyle={{ width: '20%' }}
             />
+            { cuit.registerType === RegisterTypes.RESPONSABLE_INSCRIPTO ? <Select
+                label="TIPO"
+                items={[
+                  { value: InvoiceTypes.A, message: 'Factura A' },
+                  { value: InvoiceTypes.B, message: 'Factura B' },
+                ]}
+                containerStyle={{ width: '20%' }}
+                onSelect={(selected: ISelectItemProps) => {
+                  setInvoiceType(selected.value as InvoiceTypes);
+                }}
+              >
+              {invoiceType ? InvoiceTypeMessage(
+                invoiceType
+              ) : 'SELECCIONAR'}
+            </Select> :
             <LabelValue
               label="TIPO"
               value={InvoiceTypeMessage(
-                cuit.invoiceType
+                InvoiceTypes.C
               )}
               containerStyle={{ width: '20%' }}
             />
+            }
             <Input
               label="FECHA"
               containerStyle={{ width: '80%' }}

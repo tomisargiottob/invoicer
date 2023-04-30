@@ -22,16 +22,19 @@ import { useDispatch } from 'react-redux';
 import Invoice from '../../class/Invoice/Invoice';
 import { addPendingInvoices, setCuitBalances, setCuitInvoices, updateInvoiceStatus } from '../../store/CuitSlice';
 import {v4 as uuid} from 'uuid'
+import { RegisterTypes, defaultInvoiceType, registerTypeInvoices } from '../../class/Profile/types/RegisterTypes';
+import InvoiceTypes from '../../class/Invoice/types/InvoiceTypes';
 
 const ImportInvoices = () => {
   const navigate = useNavigate();
   const [params] = useSearchParams();
-  const [number, setNumber] = useState(0);
+  const [number, setNumber] = useState<{[k:string]: number}>({});
   const [errors, setErrors] = useState<Array<string> | null>(null);
   const [dataExcel, setDataExcel] = useState<
     Array<{
       FECHA: number | Date,
       NOMBRE_COMPLETO: string;
+      FACTURA_TIPO: InvoiceTypes;
       DNI: string;
       DIRECCION: string;
       DESCRIPCION: string;
@@ -54,11 +57,13 @@ const ImportInvoices = () => {
       ) {
         navigate('/');
       }
-      const data = await getNextInvoiceNumber({user, cuit: cuit.id, invoiceType: cuit.invoiceType})
+      const invoicesNumbers: {[k:string]: number} = {}
+      for (const invoiceType of registerTypeInvoices[cuit.registerType]) {
+        const data = await getNextInvoiceNumber({user, cuit: cuit.id, invoiceType: invoiceType})
+        invoicesNumbers[invoiceType] = data.nextInvoiceNumber
+      }
       setNumber(
-        Number(
-          data.nextInvoiceNumber
-        )
+        invoicesNumbers
       );
     };
 
@@ -93,29 +98,42 @@ const ImportInvoices = () => {
           return 1
         }
       })
-      const dataFormatted: Array<Invoice> = dataExcel.map((row, idx): Invoice => {
-        let nextNumber = +number + idx;
-        return new Invoice({
+      const dataFormatted = dataExcel.reduce((invoices: {[k:string]:Array<Invoice>}, row) => {
+        const invoiceType = row.FACTURA_TIPO || defaultInvoiceType[cuit.registerType]
+        if(!invoices[invoiceType]) {
+          invoices[invoiceType] = []
+        }
+        let nextNumber = +number[invoiceType] + invoices[invoiceType]?.length;
+        invoices[invoiceType].push(new Invoice({
           _id: uuid(),
           number: nextNumber,
           date: row.FECHA as Date,
-          invoiceType: cuit.invoiceType,
+          invoiceType: row.FACTURA_TIPO || defaultInvoiceType[cuit.registerType],
           status: StatusTypes.PENDING,
           destinatary: row.NOMBRE_COMPLETO,
           destinataryDocument: String(row.DNI),
-          destinataryDocumentType: '96',
+          destinataryDocumentType: String(row.DNI).length === 8 ? '96' : '80',
           description: row.DESCRIPCION,
           units: Number(row.UNIDADES),
           unitValue: Number(row.UNITARIO),
           total: Number(row.UNIDADES) * Number(row.UNITARIO),
-        });
-      });
+        }));
+        return invoices
+      },{});
 
-      dispatch(setCuitInvoices({ invoices: [...[...dataFormatted].reverse(), ...cuit.invoices], totalInvoices: cuit.totalInvoices + dataFormatted.length }))
+      dispatch(setCuitInvoices({ invoices: [...Object.values(dataFormatted).flat().reverse(), ...cuit.invoices], totalInvoices: cuit.totalInvoices + Object.values(dataFormatted).flat().length }))
 
       navigate('/');
+      const allInvoices = Object.values(dataFormatted).flat()
+      allInvoices.sort((prev, next) => {
+        if(prev.date < next.date) {
+          return -1
+        } else {
+          return 1
+        }
+      })
       
-      for( const invoice of dataFormatted) {
+      for (const invoice of allInvoices) {
         await createOneInvoice(invoice)
       }
       const response = await getInvoices({ user, cuit: cuit.id })
@@ -133,6 +151,7 @@ const ImportInvoices = () => {
     items: Array<{
       FECHA: number;
       NOMBRE_COMPLETO: string;
+      FACTURA_TIPO: 'A' | 'B';
       DNI: string;
       DIRECCION: string;
       DESCRIPCION: string;
@@ -149,6 +168,9 @@ const ImportInvoices = () => {
     minLimit.setDate(minLimit.getDate() - 10);
     items.map((row, index) => {
       const rowDate = ExcelDateToJSDate(row.FECHA).getTime()
+      if(!row.FACTURA_TIPO && cuit.registerType === RegisterTypes.RESPONSABLE_INSCRIPTO) {
+        errorsExcel.push(`Los responsables inscriptos deben indicar el FACTURA_TIPO A o B, falta en la linea ${index + 1} `)
+      }
       if (rowDate > maxLimit.getTime())
         errorsExcel.push(`La fecha indicada en la linea ${index + 1} no puede ser mayor a 10 días desde hoy`);
       if (rowDate < minLimit.getTime())  {

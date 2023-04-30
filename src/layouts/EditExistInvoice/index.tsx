@@ -22,11 +22,13 @@ import { useAppSelector } from '../../store/store';
 import { createInvoice, getInvoices, getNextInvoiceNumber } from '../../requests/invoiceRequests';
 import { setCuitBalances, setCuitInvoices } from '../../store/CuitSlice';
 import { getBalances } from '../../requests/balanceRequests';
+import { RegisterTypes, defaultInvoiceType } from '../../class/Profile/types/RegisterTypes';
 
 const EditExistInvoice = () => {
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const [number, setNumber] = useState(0);
+  const [invoiceType, setInvoiceType] = useState(defaultInvoiceType['MONOTRIBUTO'])
   const [date, setDate] = useState(new Date());
   const [destinatary, setDestinatary] = useState('');
   const [destinataryDocumentType, setDestinataryDocumentType] =
@@ -44,13 +46,14 @@ const EditExistInvoice = () => {
   const dispatch = useDispatch()
   const cuit = useAppSelector((state) => state.cuit)
   const user = useAppSelector((state) => state.user)
-
+  
   useEffect(() => {
     if (!cuit.currentInvoice) {
       navigate('/');
     } else {
       const invoice = cuit.invoices.find((invoice) => invoice._id === cuit.currentInvoice)!
       setDestinatary(invoice.destinatary);
+      setInvoiceType(isCredit ? getCreditInvoice(invoice.invoiceType) : invoice.invoiceType )
       setDate(new Date(invoice.date))
       setDestinataryDocument(invoice.destinataryDocument);
       setDestinataryDocumentType(
@@ -74,7 +77,7 @@ const EditExistInvoice = () => {
       ) {
         navigate('/');
       }
-      const data = await getNextInvoiceNumber({user, cuit: cuit.id, invoiceType: isCredit ? getCreditInvoice(cuit.invoiceType) : cuit.invoiceType})
+      const data = await getNextInvoiceNumber({user, cuit: cuit.id, invoiceType: isCredit ? getCreditInvoice(invoiceType) : invoiceType})
       setNumber(
         Number(
           data.nextInvoiceNumber
@@ -83,7 +86,7 @@ const EditExistInvoice = () => {
     };
 
     searchInvoiceNumber();
-  }, [navigate]);
+  }, [navigate, invoiceType]);
 
   const getCreditInvoice = (invoiceType: InvoiceTypes) => {
     if (invoiceType === InvoiceTypes.A) return InvoiceTypes.NOTA_CREDITO_A;
@@ -108,11 +111,7 @@ const EditExistInvoice = () => {
         total,
         status: StatusTypes.PENDING,
         asociatedInvoice: cuit.invoices.find((invoice) => invoice._id === cuit.currentInvoice)?.number,
-        invoiceType: isCredit
-          ? getCreditInvoice(
-              cuit.invoiceType
-            )
-          : cuit.invoiceType
+        invoiceType,
       });
       await createInvoice({ user, cuit: cuit.id, invoice })
       const response = await getInvoices({ user, cuit: cuit.id })
@@ -158,12 +157,12 @@ const EditExistInvoice = () => {
               value={InvoiceTypeMessage(
                 isCredit
                   ? getCreditInvoice(
-                      cuit.invoiceType
+                    cuit.invoices.find((invoice) => invoice._id === cuit.currentInvoice)!.invoiceType
                     )
-                  : cuit.invoiceType
+                  : cuit.invoices.find((invoice) => invoice._id === cuit.currentInvoice)!.invoiceType
               )}
               containerStyle={{ width: '25%' }}
-            />
+            />            
           </div>
           <div className="edit-invoice-card-body-item">
             <LabelValue
