@@ -58,6 +58,22 @@ const NewProfile = () => {
     }
   }
 
+  const onImportPrivateKey = (file: any) => {
+    const fileReader = new FileReader();
+    fileReader.onload = (event) => {
+      setPrivateKey(event.target!.result as string)
+    }
+    fileReader.readAsBinaryString(file[0]);
+  }
+
+  const onImportCertificate = (file: any) => {
+    const fileReader = new FileReader();
+    fileReader.onload = (event) => {
+      setCertificate(event.target!.result as string)
+    }
+    fileReader.readAsBinaryString(file[0]);
+  }
+
   const verifyForm = (profile: CuitAccountInput, validationErrors: string[])=> {
     if (!profile.fullname) validationErrors.push('Debe tener un nombre completo.');
     if (!RegExp(/[0-9]{2}-[0-9]+-[0-9]/g).test(profile.cuit))
@@ -177,20 +193,88 @@ const NewProfile = () => {
             />
           </div>
           <div className="new-profile-card-body-item">
-            <TextArea
-              label="CLAVE PRIVADA"
-              containerStyle={{ width: '50%' }}
-              inputStyle={{height: '200px'}}
-              value={privateKey}
-              onChange={(event) => setPrivateKey(event.target.value)}
-            />
-            <TextArea
-              label="CERTIFICADO AFIP"
-              containerStyle={{ width: '50%' }}
-              inputStyle={{height: '200px'}}
-              value={certificate}
-              onChange={(event) => setCertificate(event.target.value)}
-            />
+            <div>
+              <Dropzone
+                onDrop={onImportPrivateKey}
+              >
+                {({
+                  getRootProps,
+                  getInputProps,
+                  isDragActive,
+                  isDragReject,
+                }) => {
+                return (
+                  <>
+                    <LabelValue label="CLAVE PRIVADA" value="" />
+                    <Input
+                      {...getInputProps()}
+                      // @ts-ignore
+                      id="adjuntarPlantilla"
+                      className="inputFileDriver"
+                      type="file"
+                    />
+
+                    <div
+                      className={
+                        isDragActive
+                          ? 'qbk-dragndrop__screen is-active'
+                          : 'qbk-dragndrop__screen'
+                      }
+                      {...getRootProps()}
+                      onChange={onImportPrivateKey}
+                    >
+                      <div className="textoLabel mt-1">
+                        {!isDragActive}
+                        {isDragActive && !isDragReject && 'Soltar y cargar'}
+                        {isDragReject &&
+                          'Archivo no aceptado. Por favor, intenta de nuevo'}
+                      </div>
+                    </div>
+                  </>
+                )}}
+              </Dropzone>
+            </div>
+            <div>
+              <Dropzone
+                onDrop={onImportCertificate}
+              >
+                {({
+                  getRootProps,
+                  getInputProps,
+                  isDragActive,
+                  isDragReject,
+                }) => {
+                return (
+                  <>
+                    <LabelValue label="CERTIFICADO" value="" />
+                    <Input
+                      {...getInputProps()}
+                      // @ts-ignore
+                      id="adjuntarPlantilla"
+                      className="inputFileDriver"
+                      type="file"
+                    />
+
+                    <div
+                      className={
+                        isDragActive
+                          ? 'qbk-dragndrop__screen is-active'
+                          : 'qbk-dragndrop__screen'
+                      }
+                      {...getRootProps()}
+                      onChange={onImportCertificate}
+                    >
+                      <div className="textoLabel mt-1">
+                        {!isDragActive}
+                        {isDragActive && !isDragReject && 'Soltar y cargar'}
+                        {isDragReject &&
+                          'Archivo no aceptado. Por favor, intenta de nuevo'}
+                      </div>
+                    </div>
+                  </>
+                )}}
+              </Dropzone>
+            </div>
           </div>
         </div>
         <div className="new-profile-card-footer">
