@@ -11,7 +11,7 @@ function Register() {
   const onFinish = async (values: {name: string, email: string, password: string}) => {
     try {
       setLoading(true);
-      await axios.post(`${import.meta.env.VITE_SERVER_URL}/api/users/register`, values);
+      await axios.post(`${import.meta.env.VITE_SERVER_URL}/users/register`, values);
       message.success("Registration Successfull");
       setLoading(false);
       navigate("/login");
