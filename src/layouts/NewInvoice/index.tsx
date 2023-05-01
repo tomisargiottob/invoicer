@@ -21,7 +21,7 @@ import { createInvoice, getInvoices, getNextInvoiceNumber } from '../../requests
 import { setCuitBalances, setCuitInvoices } from '../../store/CuitSlice';
 import { useDispatch } from 'react-redux';
 import { getBalances } from '../../requests/balanceRequests';
-import { RegisterTypes } from '../../class/Profile/types/RegisterTypes';
+import { RegisterTypes, defaultInvoiceType } from '../../class/Profile/types/RegisterTypes';
 
 const NewInvoice = () => {
   const navigate = useNavigate();
@@ -45,7 +45,7 @@ const NewInvoice = () => {
   useEffect(() => {
     const searchInvoiceNumber = async () => {
       try {
-        const data = await getNextInvoiceNumber({user, cuit: cuit.id, invoiceType: invoiceType! })
+        const data = await getNextInvoiceNumber({user, cuit: cuit.id, invoiceType: invoiceType! || defaultInvoiceType[cuit.registerType]  })
         setNumber(
           data.nextInvoiceNumber
         );
@@ -62,7 +62,7 @@ const NewInvoice = () => {
         console.error(err);
       }
     };
-    if(invoiceType) {
+    if(invoiceType || cuit.registerType === RegisterTypes.MONOTRIBUTO) {
       searchInvoiceNumber();
     }
   }, [invoiceType]);

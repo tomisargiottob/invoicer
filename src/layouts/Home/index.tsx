@@ -128,7 +128,6 @@ const Home = () => {
 
   useEffect(() => {
     const loadBalance = async () => {
-      console.log('me activo')
       let balances;
       if(selectedProfile?.id && cuit.id && !balanceFetched) {
         setBalanceFetched(true)
