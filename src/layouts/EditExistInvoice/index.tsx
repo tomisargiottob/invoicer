@@ -28,7 +28,7 @@ const EditExistInvoice = () => {
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const [number, setNumber] = useState(0);
-  const [invoiceType, setInvoiceType] = useState(defaultInvoiceType['MONOTRIBUTO'])
+  const [invoiceType, setInvoiceType] = useState<InvoiceTypes | null>(null)
   const [date, setDate] = useState(new Date());
   const [destinatary, setDestinatary] = useState('');
   const [destinataryDocumentType, setDestinataryDocumentType] =
@@ -113,7 +113,7 @@ const EditExistInvoice = () => {
         total,
         status: StatusTypes.PENDING,
         asociatedInvoice: cuit.invoices.find((invoice) => invoice._id === cuit.currentInvoice)?.number,
-        invoiceType,
+        invoiceType: invoiceType!,
       });
       await createInvoice({ user, cuit: cuit.id, invoice })
       const response = await getInvoices({ user, cuit: cuit.id })
