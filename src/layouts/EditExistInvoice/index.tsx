@@ -77,12 +77,14 @@ const EditExistInvoice = () => {
       ) {
         navigate('/');
       }
-      const data = await getNextInvoiceNumber({user, cuit: cuit.id, invoiceType: isCredit ? getCreditInvoice(invoiceType) : invoiceType})
-      setNumber(
-        Number(
-          data.nextInvoiceNumber
-        )
-      );
+      if(invoiceType) {
+        const data = await getNextInvoiceNumber({user, cuit: cuit.id, invoiceType})
+        setNumber(
+          Number(
+            data.nextInvoiceNumber
+          )
+        );
+      }
     };
 
     searchInvoiceNumber();

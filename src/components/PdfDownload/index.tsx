@@ -1,4 +1,5 @@
 import Invoice from "../../class/Invoice/Invoice";
+import { registerTypesLabels } from "../../class/Profile/types/RegisterTypes";
 import { CuitAccount } from "../../store/CuitSlice";
 import { convertDateToDDMMAAAASeparated2 } from "../../utils/utils";
 import './index.css';
@@ -55,7 +56,7 @@ function PDFDownload({invoice, cuit}: {invoice: Invoice, cuit: CuitAccount}) {
               <div className="inf">
                 <div className="label">Razón Social: <span className="data">{cuit.fullname}</span></div>
                 <div className="label">Domicilio Comercial: <span className="data">{cuit.address}</span></div>
-                <div className="label">Condición frente al IVA: Responsable Monotributo</div>
+                <div className="label">Condición frente al IVA: {registerTypesLabels[cuit.registerType]}</div>
               </div>
           </div>
           <div className="invoiceHeaderContent">

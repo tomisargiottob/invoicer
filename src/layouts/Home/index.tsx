@@ -29,6 +29,7 @@ import { CuitAccount, setActiveCuitAccount, setCuitBalances, setCuitInvoices, se
 import { getInvoices } from '../../requests/invoiceRequests';
 import IBalance from '../../class/Profile/interface/IBalance';
 import { getBalances } from '../../requests/balanceRequests';
+import { format } from 'date-fns';
 
 
 const Home = () => {
@@ -155,15 +156,14 @@ const Home = () => {
 
   const invoicesVisibles = cuit.invoices
     .map((invoice) => {
+      const parsedDate = new Date(invoice.date)
       return {
         ...invoice,
         fullname: cuit.fullname,
-        date: `${new Date(invoice.date)
-          .getDate()
-          .toString()
-          .padStart(2, '0')}/${(new Date(invoice.date).getMonth() + 1)
-          .toString()
-          .padStart(2, '0')}/${new Date(invoice.date).getFullYear()}`,
+        date: format(
+          new Date(parsedDate.getUTCFullYear(), parsedDate.getUTCMonth(), parsedDate.getUTCDate()),
+          'dd/MM/yyyy',
+        ).toString(),
         status: <StatusLabel status={invoice.status} />,
         invoiceType: InvoiceTypeMessage(invoice.invoiceType),
       };

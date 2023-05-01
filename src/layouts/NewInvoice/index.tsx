@@ -144,7 +144,6 @@ const NewInvoice = () => {
               type="date"
               onChange={(event) => {
                 const dateInput = new Date(event.target.value);
-                dateInput.setDate(dateInput.getDate() + 1);
                 setDate(dateInput);
               }}
             />

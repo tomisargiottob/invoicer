@@ -22,17 +22,17 @@ export function convertDateToAAAAMMDD(dateToConvert: Date) {
 
 export function convertDateToDDMMAAAASeparated(dateToConvert: Date) {
   const date = new Date(dateToConvert);
-  const anio = date.getFullYear();
-  const mes = (date.getMonth() + 1).toString().padStart(2, '0');
-  const dia = date.getDate().toString().padStart(2, '0');
+  const anio = date.getUTCFullYear();
+  const mes = (date.getUTCMonth() + 1).toString().padStart(2, '0');
+  const dia = date.getUTCDate().toString().padStart(2, '0');
   return `${dia}/${mes}/${anio}`;
 }
 
 export function convertDateToDDMMAAAASeparated2(dateToConvert: Date | string) {
   const date = new Date(dateToConvert);
-  const anio = date.getFullYear();
-  const mes = (date.getMonth() + 1).toString().padStart(2, '0');
-  const dia = date.getDate().toString().padStart(2, '0');
+  const anio = date.getUTCFullYear();
+  const mes = (date.getUTCMonth() + 1).toString().padStart(2, '0');
+  const dia = date.getUTCDate().toString().padStart(2, '0');
   return `${dia}/${mes}/${anio}`;
 }
 
