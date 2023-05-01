@@ -261,7 +261,7 @@ const ImportInvoices = () => {
             <p>Si no tiene el archivo, puede descargarlo aquí.</p>
           </div>
           <div className="masive-invoice-card-body-item">
-            <Link to="/plantilla_facturador_web.xlsx" target="_blank" download>
+            <Link to={`/plantilla_facturador_web${cuit.registerType === RegisterTypes.RESPONSABLE_INSCRIPTO ? '_responsable_inscripto' : ''}.xlsx`} target="_blank" download>
               <Button>
                 Download
               </Button>
