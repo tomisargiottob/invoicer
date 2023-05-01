@@ -43,22 +43,6 @@ const NewProfile = () => {
     }
   }
 
-  const verifyCertificate = (value: string, validationErrors: string[]) => {
-    const begining = value.startsWith('-----BEGIN CERTIFICATE-----')
-    const ending = value.endsWith('-----END CERTIFICATE-----')
-    if(!begining || !ending) {
-      validationErrors.push('Formato de certificado invalido. Debe comenzar con -----BEGIN CERTIFICATE----- y terminar con -----END CERTIFICATE-----')
-    }
-  }
-
-  const verifyPrivateKey = (value: string, validationErrors: string[]) => {
-    const begining = value.startsWith('-----BEGIN RSA PRIVATE KEY-----')
-    const ending = value.endsWith('-----END RSA PRIVATE KEY-----')
-    if(!begining || !ending) {
-      validationErrors.push('Formato de clave privada invalido. Debe comenzar con -----BEGIN RSA PRIVATE KEY----- y terminar con -----END RSA PRIVATE KEY-----')
-    }
-  }
-
   const onImportPrivateKey = (file: any) => {
     const fileReader = new FileReader();
     fileReader.onload = (event) => {
@@ -83,6 +67,10 @@ const NewProfile = () => {
       validationErrors.push('Debe tener un Punto de venta (5 digitos)');
     if (!profile.registerType)
       validationErrors.push('Debe tener un tipo de registro valido.');
+    if (!profile.certificate)
+      validationErrors.push('Debe introducir un certificado.');
+    if (!profile.privateKey)
+      validationErrors.push('Debe introducir la clave privada.');
   }
 
   const [errors, setErrors] = useState<Array<string> | null>(null);
@@ -103,8 +91,6 @@ const NewProfile = () => {
         privateKey
       };
       verifyForm(profile, validationErrors)
-      verifyCertificate(certificate,validationErrors)
-      verifyPrivateKey(privateKey,validationErrors)
       if(validationErrors.length) {
         setErrors(validationErrors)
         throw new Error('Por favor revise los errores del formulario')
@@ -168,7 +154,7 @@ const NewProfile = () => {
               label="TIPO DE REGISTRO"
               items={[
                 { value: 'MONOTRIBUTO', message: 'Monotributista' },
-                { value: 'RESPONSABLE INSCRIPTO', message: 'Responsable inscripto' },
+                { value: 'RESPONSABLE_INSCRIPTO', message: 'Responsable inscripto' },
               ]}
               containerStyle={{ width: '25%' }}
               onSelect={(selected: ISelectItemProps) => {
