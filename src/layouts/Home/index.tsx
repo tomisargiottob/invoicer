@@ -25,7 +25,7 @@ import { useDispatch } from 'react-redux';
 import { setUserCuitAccounts } from '../../store/UserSlice';
 import Spinner from "../../components/Spinner/Spinner";
 import CuitSelection from '../../components/CuitSelection';
-import { CuitAccount, setActiveCuitAccount, setCuitBalances, setCuitInvoices, setCurrentInvoice } from '../../store/CuitSlice';
+import { CuitAccount, setActiveCuitAccount, setCuitBalances, setCuitInvoices, setCurrentInvoice, unsetCuitAccount } from '../../store/CuitSlice';
 import { getInvoices } from '../../requests/invoiceRequests';
 import IBalance from '../../class/Profile/interface/IBalance';
 import { getBalances } from '../../requests/balanceRequests';
@@ -34,7 +34,7 @@ import { format } from 'date-fns';
 
 const Home = () => {
   const navigate = useNavigate();
-  const [selectedProfile, setSelectedProfile] = useState<CuitAccount>();
+  const [selectedProfile, setSelectedProfile] = useState<CuitAccount | undefined>();
   const [balance, setBalance] = useState(0);
   const [page, setPage] = useState(1);
   const [finder, setFinder] = useState('');
@@ -128,6 +128,7 @@ const Home = () => {
 
   useEffect(() => {
     const loadBalance = async () => {
+      console.log('me activo')
       let balances;
       if(selectedProfile?.id && cuit.id && !balanceFetched) {
         setBalanceFetched(true)
@@ -172,7 +173,14 @@ const Home = () => {
     <div className="container">
       <Navbar
         selectedProfile={selectedProfile}
-        onSelectedProfile={(profile) => setSelectedProfile(profile)}
+        onSelectedProfile={(profile) => {
+          setSelectedProfile(undefined)
+          setUserAuthenticated(false)
+          setBalanceFetched(false)
+          dispatch(unsetCuitAccount())
+          setSelectedProfile(profile)
+          dispatch(setActiveCuitAccount({cuit: profile}))
+        }}
       />
       {
         loading ? <><Spinner /></> :

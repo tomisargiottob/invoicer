@@ -116,11 +116,11 @@ const EditExistInvoice = () => {
         invoiceType: invoiceType!,
       });
       await createInvoice({ user, cuit: cuit.id, invoice })
+      navigate('/');
       const response = await getInvoices({ user, cuit: cuit.id })
       dispatch(setCuitInvoices({invoices: response.invoices, totalInvoices: response.count}))
       const balances = await getBalances({user, cuit: cuit.id})
       dispatch(setCuitBalances({balances}))
-      navigate('/');
     } catch (error: any) {
       if (error instanceof ValidationException) {
         setErrors(error.getDetailedErrors());
