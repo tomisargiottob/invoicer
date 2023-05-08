@@ -6,6 +6,8 @@ import Spinner from "../../components/Spinner/Spinner";
 import { setUser } from "../../store/UserSlice";
 import { useDispatch } from 'react-redux'
 import { login } from "../../requests/userRequest";
+import { faEye } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 function Login() {
   const [loading, setLoading] = useState(false);
@@ -49,7 +51,7 @@ function Login() {
               <Input autoComplete="on" />
             </Form.Item>
             <Form.Item label="Password" name="password" rules={[ { message: "Please enter your password!", required: true } ]}>
-              <Input autoComplete="on" type="password" />
+              <Input.Password autoComplete="on" className='password-input' />
             </Form.Item>
 
             <div className="d-flex justify-content-between align-items-center">

@@ -20,7 +20,6 @@
 input:focus {
   outline: none !important;
   box-shadow: none !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.784) !important;
 }
 
 label,
@@ -64,3 +63,13 @@ a {
   height: 100%;
 }
 
+.password-input{
+  background-color: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.784);
+  color: rgba(255, 255, 255, 0.568);
+}
+
+input:-webkit-autofill, textarea:-webkit-autofill, select:-webkit-autofill{
+  transition-delay: 3600s;
+}
