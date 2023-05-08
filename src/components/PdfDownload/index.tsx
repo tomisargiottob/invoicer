@@ -43,14 +43,14 @@ function PDFDownload({invoice, cuit}: {invoice: Invoice, cuit: CuitAccount}) {
         : 'NOTA CREDITO'
     return (
         <div className='pdf-download'>
-            <div className="borderDiv originalLabel">
+          <div className="borderDiv originalLabel">
             ORIGINAL
-            </div>
-            <div className="invoiceHeaderContainer">
-            <div className="invoiceTypeContainer">
-              <div className="invoiceType">{invoiceCodes[invoice.invoiceType]}</div>
-              <div>COD. {cod}</div>
-            </div>     
+          </div>
+        <div className="invoiceHeaderContainer">
+          <div className="invoiceTypeContainer">
+            <div className="invoiceType">{invoiceCodes[invoice.invoiceType]}</div>
+            <div>COD. {cod}</div>
+          </div>     
           <div className="invoiceHeaderContent">
             <div className="fromName">{cuit.fullname}</div>
               <div className="inf">
@@ -74,17 +74,17 @@ function PDFDownload({invoice, cuit}: {invoice: Invoice, cuit: CuitAccount}) {
           <div className="label">Periodo Facturado Desde: <span className="data">{convertDateToDDMMAAAASeparated2(perdesDate)}</span></div>
           <div className="label">Hasta: <span className="data">{perhasDate.toLocaleString().slice(0,10)}</span></div>
         </div>
-        <div className="borderDiv">
+        <div className="borderDiv cuit-data">
           <div className="destinataryInfoContainer">
-            <div className="label" style={{lineHeight: '16px', fontSize: '12px'}}>CUIT: <span className="data">{invoice.destinataryDocument}</span></div>
-            <div className="label" style={{lineHeight: '16px', fontSize: '12px'}}>Apellido y Nombre / Razon Social: <span className="data">{invoice.destinatary}</span></div>
+            <div className="label">CUIT: <span className="data">{invoice.destinataryDocument}</span></div>
+            <div className="label">Apellido y Nombre / Razon Social: <span className="data">{invoice.destinatary}</span></div>
           </div>
           <div className="destinataryInfoContainer">
-            <div className="label" style={{lineHeight: '16px', fontSize: '12px'}}>Condición frente al IVA: <span className="data">Consumidor Final</span></div>
-            <div className="label" style={{lineHeight: '16px', fontSize: '12px'}}>Domicilio: <span className="data"> - </span></div>
+            <div className="label">Condición frente al IVA: <span className="data">Consumidor Final</span></div>
+            <div className="label">Domicilio: <span className="data"> - </span></div>
           </div>
           <div className="destinataryInfoContainer">
-            <div className="label" style={{lineHeight: '16px', fontSize: '12px'}}>Condición de venta: <span className="data">Otras</span></div>
+            <div className="label">Condición de venta: <span className="data">Otras</span></div>
           </div>
         </div>
         <div className="tableContainer">
@@ -121,7 +121,7 @@ function PDFDownload({invoice, cuit}: {invoice: Invoice, cuit: CuitAccount}) {
           <div className="label">Importe total: $ {invoice.total}</div>
         </div>
         <div className="invoiceTotal">
-          <div className="label" style={{fontSize: '12px'}}>CAE N°: {invoice.cae}</div>
+          <div className="label">CAE N°: {invoice.cae}</div>
         </div>
       </div>
     )
