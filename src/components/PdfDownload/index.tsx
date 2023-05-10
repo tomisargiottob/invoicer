@@ -2,6 +2,7 @@ import Invoice from "../../class/Invoice/Invoice";
 import { registerTypesLabels } from "../../class/Profile/types/RegisterTypes";
 import { CuitAccount } from "../../store/CuitSlice";
 import { convertDateToDDMMAAAASeparated2 } from "../../utils/utils";
+import { lastDayOfMonth } from "date-fns";
 import './index.css';
 
 export const invoiceTypes = {
@@ -29,11 +30,7 @@ function PDFDownload({invoice, cuit}: {invoice: Invoice, cuit: CuitAccount}) {
         invoiceDate.getMonth(),
         1
       );
-      const perhasDate = new Date(
-        invoiceDate.getFullYear(),
-        invoiceDate.getMonth() + 1,
-        -1
-      );
+    const perhasDate = lastDayOfMonth(invoiceDate)
     const cod = invoiceTypes[invoice.invoiceType]
     const invoiceType =
       invoice.invoiceType === 'A' ||
@@ -72,7 +69,7 @@ function PDFDownload({invoice, cuit}: {invoice: Invoice, cuit: CuitAccount}) {
         </div>
         <div className="borderDiv periodContainer">
           <div className="label">Periodo Facturado Desde: <span className="data">{convertDateToDDMMAAAASeparated2(perdesDate)}</span></div>
-          <div className="label">Hasta: <span className="data">{perhasDate.toLocaleString().slice(0,10)}</span></div>
+          <div className="label">Hasta: <span className="data">{convertDateToDDMMAAAASeparated2(perhasDate.toISOString())}</span></div>
         </div>
         <div className="borderDiv cuit-data">
           <div className="destinataryInfoContainer">
@@ -117,7 +114,7 @@ function PDFDownload({invoice, cuit}: {invoice: Invoice, cuit: CuitAccount}) {
         </div>
         <div className="borderDiv invoiceTotal">
           <div className="label">Subtotal: $ {invoice.total}</div>
-          <div className="label">Importe otros tributos: $ {invoice.total}</div>
+          <div className="label">Importe otros tributos: $ 0</div>
           <div className="label">Importe total: $ {invoice.total}</div>
         </div>
         <div className="invoiceTotal">
