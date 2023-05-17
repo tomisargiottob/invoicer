@@ -12,7 +12,9 @@ export interface CuitAccountInput {
     salePoint: string,
     initAct: string,
     certificate: string,
-    privateKey: string
+    privateKey: string,
+    vat: number,
+    staticVat: boolean,
 }
 
 export interface CuitAccount extends Pick<CuitAccountInput, Exclude<keyof CuitAccountInput,'certificate' | 'privateKey'>> {
@@ -24,7 +26,9 @@ export interface CuitAccount extends Pick<CuitAccountInput, Exclude<keyof CuitAc
     sign: string;
     totalInvoices: number;
     currentInvoice?: string;
-    updated?: number
+    updated?: number,
+    vat: number,
+    staticVat: boolean,
 }
 
 interface BalanceData {
@@ -47,7 +51,10 @@ const initialState: CuitAccount = {
     sign: '',
     totalInvoices: 0,
     currentInvoice: undefined,
-    updated: Date.now()
+    updated: Date.now(),
+    staticVat: false,
+    vat: 0,
+
 }
 
 export const CuitSlice = createSlice({
@@ -62,6 +69,8 @@ export const CuitSlice = createSlice({
             state.cuit = action.payload.cuit.cuit
             state.initAct = action.payload.cuit.initAct
             state.salePoint = action.payload.cuit.salePoint
+            state.vat = action.payload.cuit.vat
+            state.staticVat = action.payload.cuit.staticVat
         },
         setCuitInvoices: (state, action: PayloadAction<({invoices: Invoice[], totalInvoices: number})>) => {
             state.invoices = action.payload.invoices
@@ -98,6 +107,8 @@ export const CuitSlice = createSlice({
             state.tokenExpires = initialState.tokenExpires
             state.salePoint = initialState.salePoint
             state.balances = initialState.balances
+            state.vat = initialState.vat,
+            state.staticVat = initialState.staticVat
         },
         setCurrentInvoice: (state, action: PayloadAction<{invoiceNumber?: string}>) => {
             state.currentInvoice = action.payload.invoiceNumber
