@@ -70,12 +70,19 @@ const ImportInvoices = () => {
     searchInvoiceNumber();
   }, [cuit, navigate]);
 
-  const createOneInvoice = async (invoice: Invoice) => {
+  const createOneInvoice = async (invoice: Invoice, errors: {[k:string]: number}) => {
     try {
       dispatch(updateInvoiceStatus({id: invoice._id!, status: StatusTypes.PROCESSING}))
+      if(errors[invoice.invoiceType]) {
+        invoice.number-=errors[invoice.invoiceType]
+      }
       await createInvoice({user, cuit: cuit.id, invoice})
       dispatch(updateInvoiceStatus({id: invoice._id!, status: StatusTypes.PROCESSED}))
     } catch (err) {
+      if(!errors[invoice.invoiceType]) {
+        errors[invoice.invoiceType] = 0
+      }
+      errors[invoice.invoiceType] +=1
       dispatch(updateInvoiceStatus({id: invoice._id!, status: StatusTypes.REJECTED}))
     }
   }
@@ -131,9 +138,9 @@ const ImportInvoices = () => {
           return 1
         }
       })
-      
+      const errors = {};
       for (const invoice of allInvoices) {
-        await createOneInvoice(invoice)
+        await createOneInvoice(invoice, errors)
       }
       const response = await getInvoices({ user, cuit: cuit.id })
       dispatch(setCuitInvoices({ invoices: response.invoices, totalInvoices: response.count as number }))
