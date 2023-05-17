@@ -68,16 +68,24 @@ function PDFDownload({invoice, cuit}: {invoice: Invoice, cuit: CuitAccount}) {
           </div>
         </div>
         <div className="borderDiv periodContainer">
-          <div className="label">Periodo Facturado Desde: <span className="data">{convertDateToDDMMAAAASeparated2(perdesDate)}</span></div>
-          <div className="label">Hasta: <span className="data">{convertDateToDDMMAAAASeparated2(perhasDate.toISOString())}</span></div>
+          <div className="label">Periodo Facturado Desde: 
+            {/* <span className="data">{convertDateToDDMMAAAASeparated2(perdesDate)}</span> */}
+          </div>
+          <div className="label">Hasta: 
+            {/* <span className="data">{convertDateToDDMMAAAASeparated2(perhasDate.toISOString())}</span> */}
+          </div>
         </div>
         <div className="borderDiv cuit-data">
           <div className="destinataryInfoContainer">
-            <div className="label">CUIT: <span className="data">{invoice.destinataryDocument}</span></div>
+            <div className="label">
+            {
+              invoice.destinataryDocumentType === '96' ? 'DNI:' : 'CUIT:'
+            }
+            <span className="data">{invoice.destinataryDocument}</span></div>
             <div className="label">Apellido y Nombre / Razon Social: <span className="data">{invoice.destinatary}</span></div>
           </div>
           <div className="destinataryInfoContainer">
-            <div className="label">Condición frente al IVA: <span className="data">Consumidor Final</span></div>
+            <div className="label">Condición frente al IVA: <span className="data">{['A', 'NOTA_CREDITO_A'].includes(invoice.invoiceType) ? 'Responsable Inscripto' : 'Consumidor Final'}</span></div>
             <div className="label">Domicilio: <span className="data"> - </span></div>
           </div>
           <div className="destinataryInfoContainer">
@@ -112,10 +120,18 @@ function PDFDownload({invoice, cuit}: {invoice: Invoice, cuit: CuitAccount}) {
             </tbody>
           </table>
         </div>
-        <div className="borderDiv invoiceTotal">
-          <div className="label">Subtotal: $ {invoice.total}</div>
-          <div className="label">Importe otros tributos: $ 0</div>
-          <div className="label">Importe total: $ {invoice.total}</div>
+        <div className="borderDiv invoiceTotal vat-description">
+          <div className="vat-types">
+            {['A', 'NOTA_CREDITO_A'].includes(invoice.invoiceType) ? (<>
+                <div className="label">Subtotal: </div><div>$ {invoice.total - invoice.total * cuit.vat/100}</div>
+                <div className="label">Importe otros tributos: </div> <div>$ 0</div>
+                <div className="label">IVA {cuit.vat}%: </div> <div>$ {invoice.total * cuit.vat/100}</div>
+              </>) : (<>
+                <div className="label">Subtotal: </div><div>$ {invoice.total}</div>
+                <div className="label">Importe otros tributos: </div> <div>$ 0</div>
+              </>)}
+            <div className="label">Importe total: </div> <div>$ {invoice.total}</div>
+          </div>
         </div>
         <div className="invoiceTotal">
           <div className="label">CAE N°: {invoice.cae}</div>
