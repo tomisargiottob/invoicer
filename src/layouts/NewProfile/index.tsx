@@ -13,12 +13,14 @@ import { useAppSelector } from '../../store/store';
 import {  CuitAccountInput } from '../../store/CuitSlice';
 import { useDispatch } from 'react-redux';
 import { setUserCuitAccounts } from '../../store/UserSlice';
-import TextArea from '../../components/TextArea';
 import Toastify from 'toastify-js';
 import 'toastify-js/src/toastify.css';
 import Dropzone from 'react-dropzone';
 import LabelValue from '../../components/LabelValue';
 import { RegisterTypes } from '../../class/Profile/types/RegisterTypes';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
+import { AllowedVats } from '../../class/Invoice/types/InvoiceTypes';
 
 const NewProfile = () => {
   const navigate = useNavigate();
@@ -30,6 +32,8 @@ const NewProfile = () => {
   const [address, setAddress] = useState('');
   const [certificate, setCertificate] = useState('');
   const [privateKey, setPrivateKey] = useState('');
+  const [staticVat, setStaticVat] = useState(true);
+  const [vat, setVat] = useState(21)
 
   const dispatch = useDispatch()
 
@@ -60,6 +64,9 @@ const NewProfile = () => {
   }
 
   const verifyForm = (profile: CuitAccountInput, validationErrors: string[])=> {
+    if (profile.staticVat && !AllowedVats.includes(profile.vat)) {
+      validationErrors.push('El iva indicado no esta permitido por afip, recuerde introducir unicamente el valor sin el simbolo %')
+    }
     if (!profile.fullname) validationErrors.push('Debe tener un nombre completo.');
     if (!RegExp(/[0-9]{2}-[0-9]+-[0-9]/g).test(profile.cuit))
       validationErrors.push('Debe tener un Cuit / Cuil valido (XX-XXXXXXXX-X)');
@@ -88,7 +95,9 @@ const NewProfile = () => {
         address,
         initAct: initAct.toISOString(),
         certificate,
-        privateKey
+        privateKey,
+        staticVat,
+        vat,
       };
       verifyForm(profile, validationErrors)
       if(validationErrors.length) {
@@ -132,23 +141,15 @@ const NewProfile = () => {
           <div className="new-profile-card-body-item">
             <Input
               label="NOMBRE COMPLETO"
-              containerStyle={{ width: '55%' }}
+              containerStyle={{ width: '50%' }}
               value={fullname}
               onChange={(event) => setFullName(event.target.value)}
             />
             <Input
               label="CUIT / CUIL"
-              containerStyle={{ width: '35%' }}
+              containerStyle={{ width: '25%' }}
               value={cuit}
               onChange={(event) => cuitChange(event.target.value)}
-            />
-          </div>
-          <div className="new-profile-card-body-item">
-            <Input
-              label="PUNTO DE VENTA"
-              containerStyle={{ width: '25%' }}
-              value={salePoint}
-              onChange={(event) => setSalePoint(event.target.value)}
             />
             <Select
               label="TIPO DE REGISTRO"
@@ -163,12 +164,41 @@ const NewProfile = () => {
             >
               {registerType?.message || 'SELECCIONAR'}
             </Select>
+          </div>
+          <div className="new-profile-card-body-item">
+            <Input
+              label="PUNTO DE VENTA"
+              containerStyle={{ width: '25%' }}
+              value={salePoint}
+              onChange={(event) => setSalePoint(event.target.value)}
+            />
             <Input
               label="INICIO ACT."
               containerStyle={{ width: '25%' }}
               onChange={(event) => setInitAct(new Date(event.target.value))}
               type="date"
-            />
+              />
+            { registerType?.value === 'RESPONSABLE_INSCRIPTO' && (<>
+            {/* <div className='tooltip-container'>
+              <Input
+                label="IVA"
+                onChange={(event) => setStaticVat(event.target.checked)}
+                type="checkbox"
+                inputStyle={{marginLeft: '0px'}}
+              />
+              <span className='question-icon'>
+                <FontAwesomeIcon icon={faQuestionCircle} title='Seleccione si todos los productos facturados tendrán un mismo IVA'/>
+              </span>
+            </div> */}
+            {staticVat && <Input
+              label="PORCENTAJE DE IVA"
+              containerStyle={{ width: '25%' }}
+              onChange={(event) => setVat(+event.target.value)}
+              value={String(vat)}
+              type="text"
+              step={0.5}
+            />}</>)
+            }
           </div>
           <div className="new-profile-card-body-item">
             <Input

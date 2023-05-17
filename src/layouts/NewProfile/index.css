@@ -30,3 +30,15 @@
   display: flex;
   justify-content: space-around;
 }
+
+.tooltip-container{
+  display: flex;
+  flex-direction: row;
+  width: 25%;
+}
+.question-icon{
+  position: relative;
+  top: 11px;
+  margin-left: 10px;
+  cursor: help;
+}
