@@ -43,12 +43,19 @@ const NewInvoice = () => {
   const cuit = useAppSelector((state) => state.cuit)
   const dispatch = useDispatch()
   useEffect(() => {
+    if(cuit.registerType === RegisterTypes.MONOTRIBUTO && !invoiceType) {
+      setInvoiceType(defaultInvoiceType[cuit.registerType])
+    }
+  },[cuit])
+  useEffect(() => {
     const searchInvoiceNumber = async () => {
       try {
-        const data = await getNextInvoiceNumber({user, cuit: cuit.id, invoiceType: invoiceType! || defaultInvoiceType[cuit.registerType]  })
-        setNumber(
-          data.nextInvoiceNumber
-        );
+        if(invoiceType) {
+          const data = await getNextInvoiceNumber({user, cuit: cuit.id, invoiceType: invoiceType || defaultInvoiceType[cuit.registerType]  })
+          setNumber(
+            data.nextInvoiceNumber
+          );
+        }
       } catch (err: any) {
         Toastify({
           text: err.message,
