@@ -32,7 +32,7 @@ const PrivateRoute = (props: { children: React.ReactNode }): JSX.Element => {
       if(user.paymentRequired && location.pathname !== '/profile') {
         navigate('/profile')
       }
-    },[location])
+    },[location, user])
   
     return isLoggedIn ? (
       <>{children}</>

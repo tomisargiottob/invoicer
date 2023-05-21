@@ -7,6 +7,7 @@ import { useAppSelector } from '../../../store/store';
 import { CuitAccount, CuitAccountInput, unsetCuitAccount } from '../../../store/CuitSlice';
 import { useDispatch } from 'react-redux';
 import { Dispatch, SetStateAction } from 'react';
+import { unsetUser } from '../../../store/UserSlice';
 
 const NavBarProfile = ({
   setProfileOpen,
@@ -22,6 +23,8 @@ const NavBarProfile = ({
     navigate('/newProfile');
   };
   const onClickLogOut = () => {
+    dispatch(unsetCuitAccount())
+    dispatch(unsetUser())
     localStorage.removeItem("logged_user");
     navigate("/login");
   }

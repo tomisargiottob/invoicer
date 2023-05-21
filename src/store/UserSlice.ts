@@ -47,9 +47,19 @@ export const UserSlice = createSlice({
         },
         setUserCuitAccounts:(state, action: PayloadAction<({cuitAccounts: CuitAccount[]})>) => {
             state.cuitAccounts = action.payload.cuitAccounts
+        },
+        unsetUser: (state) => {
+            state.id = initialState.id;
+            state.name = initialState.name
+            state.organization = initialState.organization
+            state.role = initialState.role
+            state.token = initialState.token
+            state.email = initialState.email
+            state.maxCuits = initialState.maxCuits
+            state.paymentRequired = initialState.paymentRequired
         }
     }
 })
 
 export default UserSlice.reducer
-export const { setUser, setUserCuitAccounts  } = UserSlice.actions
+export const { setUser, setUserCuitAccounts, unsetUser } = UserSlice.actions
