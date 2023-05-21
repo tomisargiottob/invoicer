@@ -180,6 +180,7 @@ const Home = () => {
           setSelectedProfile(profile)
           dispatch(setActiveCuitAccount({cuit: profile}))
         }}
+        paymentRequired={user.paymentRequired}
       />
       {
         loading ? <><Spinner /></> :
