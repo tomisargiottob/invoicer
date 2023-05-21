@@ -75,3 +75,13 @@
   width: 100vw;
   z-index: 0;
 }
+
+.payment-required{
+  height: 30px;
+  background-color: rgb(193, 3, 3);
+  color: white;
+  text-align: center;
+  padding-top: 5px;
+  border-radius: 5px;
+  cursor: pointer;
+}
