@@ -5,6 +5,7 @@ import ImportInvoices from './layouts/ImportInvoices';
 import ImportBalance from './layouts/MasivaBalance';
 import NewInvoice from './layouts/NewInvoice';
 import NewProfile from './layouts/NewProfile';
+import Profile from './layouts/Profile';
 import ViewBalance from './layouts/ViewBalance';
 import ViewInvoice from './layouts/ViewInvoice';
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
@@ -23,6 +24,7 @@ export default function App() {
         <Route path="/register" element={<Register/>}></Route>
         <Route path="/" element={<PrivateRoute><Home /></PrivateRoute>} />
         <Route path="/newProfile" element={<PrivateRoute><NewProfile /></PrivateRoute>} />
+        <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
         <Route path="/deleteProfile/:cuit" element={<PrivateRoute><DeleteProfile /></PrivateRoute>} />
         <Route path="/newInvoice" element={<PrivateRoute><NewInvoice /></PrivateRoute>} />
         <Route path="/importInvoices" element={<PrivateRoute><ImportInvoices /></PrivateRoute>} />
