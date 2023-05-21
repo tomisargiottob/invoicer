@@ -29,10 +29,14 @@ const NavBarProfile = ({
   const handleUserChange = () => {
     dispatch(unsetCuitAccount())
     setProfileOpen(false)
+    navigate('/')
   }
 
   return (
     <div className="navbar-profile-container">
+      <SecondaryButton style={{ padding: 10 }} onClick={() => navigate('/profile')}>
+        Perfil
+      </SecondaryButton>
       <SecondaryButton style={{ padding: 10 }} onClick={handleUserChange}>
         Cambiar de Usuario
       </SecondaryButton>
