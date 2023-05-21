@@ -197,20 +197,18 @@ const NewInvoice = () => {
               value={destinataryDocument}
             />
           </div>
-          <div className="new-invoice-card-body-item">
+          <div className="new-invoice-card-body-item amount-section">
             <Input
               label="DESCRIPCION"
-              containerStyle={{ width: '100%' }}
+              containerStyle={{ width: '50%' }}
               onChange={(event) => {
                 setDescription(event.target.value);
               }}
               value={description}
             />
-          </div>
-          <div className="new-invoice-card-body-item amount-section">
             <Input
               label="UNIDADES"
-              containerStyle={{ width: '15%' }}
+              containerStyle={{ width: '10%' }}
               type="number"
               onChange={(event) => {
                 setUnits(Number(event.target.value));
@@ -231,7 +229,7 @@ const NewInvoice = () => {
             <LabelValue
               label="TOTAL"
               value={`$ ${total}`}
-              containerStyle={{ width: '70%' }}
+              containerStyle={{ width: '15%' }}
             />
           </div>
         </div>
