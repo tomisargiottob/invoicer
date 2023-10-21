@@ -100,12 +100,12 @@ const ViewInvoice = () => {
                   ? `${invoice.destinatary} (${invoice.destinataryDocument})`
                   : ''
               }
-              containerStyle={{ width: '33%' }}
+              containerStyle={{ width: '50%' }}
             />
             <LabelValue
               label="DESCRIPCION:"
               value={invoice ? invoice.description : ''}
-              containerStyle={{ width: '33%' }}
+              containerStyle={{ width: '50%' }}
             />
           </div>
           <div className="view-invoice-card-item">
@@ -129,13 +129,13 @@ const ViewInvoice = () => {
             <LabelValue
               label="ESTADO:"
               value={invoice ? <StatusLabel status={invoice.status} /> : ''}
-              containerStyle={{ width: '33%' }}
+              containerStyle={{ width: '50%' }}
             />
             {invoice && invoice.status === 'PROCESSED' && (
               <LabelValue
                 label="CAE:"
                 value={invoice ? invoice.cae : ''}
-                containerStyle={{ width: '33%' }}
+                containerStyle={{ width: '50%' }}
               />
             )}
             {invoice && invoice.status === 'REJECTED' && (

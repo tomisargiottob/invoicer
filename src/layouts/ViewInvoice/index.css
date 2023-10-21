@@ -27,3 +27,16 @@
   display: flex;
   justify-content: space-around;
 }
+
+@media only screen and (max-width: 768px) {
+  .view-invoice-card-container {
+    min-width: 200px;
+  }
+  .view-invoice-card-container .card-content {
+    padding: 15px;
+  }
+  .view-invoice-card-container button {
+    padding: 15px;
+    margin-right: 10px;
+  }
+}

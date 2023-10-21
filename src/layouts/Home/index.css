@@ -77,3 +77,38 @@
   flex-direction: column;
   text-align: center;
 }
+
+@media only screen and (max-width: 768px) {
+  .container {
+    background-color: #C9D6E1;
+    min-height: 100vh;
+    min-width: 200px;
+  }  
+  .cuit-selection-options{
+    height: 300px;
+  }
+  .home-card-detail-container .card-content{
+    padding: 0px;
+    display: grid;
+    justify-content: center;
+    height: 100%;
+  }
+  .masive-invoice-button {
+    display: none;
+  }
+  .home-card-container .card-content{
+    padding: 10px;
+  }
+  .status-card{
+    flex-direction: column;
+    align-items: center;
+    font-size: 12px;
+  }
+  .status-card .title{
+    text-align: center;
+    font-size: 16px !important;
+  }
+  .import-balance-icon{
+    display: none;
+  }
+}

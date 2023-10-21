@@ -51,7 +51,7 @@ function PDFDownload({invoice, cuit}: {invoice: Invoice, cuit: CuitAccount}) {
           <div className="invoiceHeaderContent">
             <div className="fromName">{cuit.fullname}</div>
               <div className="inf">
-                <div className="label">Razón Social: <span className="data">{cuit.fullname}</span></div>
+                {/* <div className="label">Razón Social: <span className="data">{cuit.fullname}</span></div> */}
                 <div className="label">Domicilio Comercial: <span className="data">{cuit.address}</span></div>
                 <div className="label">Condición frente al IVA: {registerTypesLabels[cuit.registerType]}</div>
               </div>
@@ -96,9 +96,9 @@ function PDFDownload({invoice, cuit}: {invoice: Invoice, cuit: CuitAccount}) {
           <table>
             <thead>
               <tr>
-                <th>Código</th>
+                <th>Cód.</th>
                 <th>Producto / Servicio</th>
-                <th>Cantidad</th>
+                <th>Cant.</th>
                 <th>U. Medida</th>
                 <th>Precio Unit.</th>
                 <th>% Bonif</th>
@@ -112,7 +112,7 @@ function PDFDownload({invoice, cuit}: {invoice: Invoice, cuit: CuitAccount}) {
                 <td>{invoice.description}</td>
                 <td>{invoice.units}</td>
                 <td>unidades</td>
-                <td>{invoice.unitValue}</td>
+                <td>{Number(invoice.unitValue).toFixed(2)}</td>
                 <td>0,00</td>
                 <td>0,00</td>
                 <td>{invoice.total}</td>

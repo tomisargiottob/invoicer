@@ -6,11 +6,12 @@ interface IButton {
   style?: CSSProperties;
   onClick?: () => void;
   disabled?: boolean;
+  className?: string;
 }
 
-const Button = ({ children, style, onClick, disabled }: IButton) => {
+const Button = ({ children, style, onClick, disabled, className }: IButton) => {
   return (
-    <button type="button" className="button" style={style} onClick={onClick} disabled={disabled}>
+    <button className={`button ${className}`} type="button"style={style} onClick={onClick} disabled={disabled}>
       {children}
     </button>
   );

@@ -8,7 +8,7 @@ import NewProfile from './layouts/NewProfile';
 import Profile from './layouts/Profile';
 import ViewBalance from './layouts/ViewBalance';
 import ViewInvoice from './layouts/ViewInvoice';
-import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
 import React from 'react'
 import PrivateRoute from './components/PrivateRoute/PrivateRoute';

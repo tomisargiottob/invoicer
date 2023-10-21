@@ -98,7 +98,12 @@ const ImportInvoices = () => {
         row.FECHA = typeof row.FECHA === 'number' ? ExcelDateToJSDate(row.FECHA) : new Date()
       })
       dataExcel.sort((prev, next) => {
-        if(prev.FECHA < next.FECHA) {
+        const prevValue = (prev.FECHA as Date).getTime()
+        const nextValue = (next.FECHA as Date).getTime()
+        if(prevValue === nextValue) {
+          return 0
+        }
+        if(prevValue < nextValue) {
           return -1
         } else {
           return 1
@@ -126,13 +131,17 @@ const ImportInvoices = () => {
         }));
         return invoices
       },{});
-
       dispatch(setCuitInvoices({ invoices: [...Object.values(dataFormatted).flat().reverse(), ...cuit.invoices], totalInvoices: cuit.totalInvoices + Object.values(dataFormatted).flat().length }))
 
       navigate('/');
       const allInvoices = Object.values(dataFormatted).flat()
       allInvoices.sort((prev, next) => {
-        if(prev.date < next.date) {
+        const prevValue = (prev.date as Date).getTime()
+        const nextValue = (next.date as Date).getTime()
+        if(prevValue === nextValue) {
+          return 0
+        }
+        if(prevValue < nextValue) {
           return -1
         } else {
           return 1
