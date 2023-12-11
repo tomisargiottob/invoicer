@@ -84,10 +84,12 @@ const NewInvoice = () => {
         destinatary,
         destinataryDocument,
         destinataryDocumentType: String(destinataryDocumentType?.value),
-        description,
-        units,
-        unitValue,
-        total,
+        items: [{
+          description,
+          units,
+          unitValue,
+          iva: ''
+        }],
         invoiceType: invoiceType!,
         status: StatusTypes.PENDING,
       });
