@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import StatusTypes from './types/StatusTypes';
 import InvoiceTypes from './types/InvoiceTypes';
-import IInvoice from './interface/IInvoice';
+import IInvoice, { InvoiceItem } from './interface/IInvoice';
 import ValidationException from './Exceptions/ValidationException';
 
 class Invoice {
@@ -19,13 +19,7 @@ class Invoice {
 
   public destinataryDocument: string;
 
-  public description: string;
-
-  public units: number;
-
-  public unitValue: number;
-
-  public total: number;
+  public items: InvoiceItem[]
 
   public status: StatusTypes;
 
@@ -43,10 +37,7 @@ class Invoice {
     destinatary,
     destinataryDocumentType,
     destinataryDocument,
-    description,
-    units,
-    unitValue,
-    total,
+    items,
     status,
     reason,
     cae,
@@ -59,11 +50,8 @@ class Invoice {
       destinatary,
       destinataryDocumentType,
       destinataryDocument,
-      description,
-      units,
-      unitValue,
+      items,
       status,
-      total,
     });
     if (errors.length > 0) throw new ValidationException(errors);
 
@@ -74,10 +62,7 @@ class Invoice {
     this.destinatary = destinatary;
     this.destinataryDocumentType = destinataryDocumentType;
     this.destinataryDocument = destinataryDocument;
-    this.description = description;
-    this.units = units;
-    this.unitValue = unitValue;
-    this.total = total;
+    this.items = items;
     this.status = status;
     this.reason = reason || '';
     this.cae = cae || '';
@@ -90,9 +75,7 @@ class Invoice {
     destinatary,
     destinataryDocumentType,
     destinataryDocument,
-    description,
-    units,
-    unitValue,
+    items
   }: IInvoice) {
     const errors = [];
     if (!number) errors.push('Debe tener un numero de Factura.');
@@ -104,9 +87,28 @@ class Invoice {
       errors.push(
         'Debe tener un documento valido (XXXXXXXX) sin guiones en caso de CUIL o CUIT'
       );
-    if (!description) errors.push('Debe tener una descripcion.');
-    if (units <= 0) errors.push('Debe tener al menos una unidad.');
-    if (unitValue <= 0) errors.push('Debe tener un valor unitario mayor a 0.');
+    for(const item of items) {
+      if (!item.description) {
+        errors.push(
+          'Producto debe tener una descripcion'
+        );
+      }
+      if (!item.iva) {
+        errors.push(
+          'Producto debe tener un iva'
+        );
+      }
+      if (!item.unitValue) {
+        errors.push(
+          'Producto debe tener una descripcion'
+        );
+      }
+      if (!item.units) {
+        errors.push(
+          'Producto debe tener una cantidad de unidades'
+        );
+      }
+    }
 
     return errors;
   }
