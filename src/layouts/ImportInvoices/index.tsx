@@ -111,14 +111,14 @@ const ImportInvoices = () => {
         }
       })
       const dataFormatted = dataExcel.reduce((invoices: {[k:string]:Array<Invoice>}, row) => {
-        const invoiceType = row.FACTURA_TIPO || defaultInvoiceType[cuit.registerType]
+        const invoiceType = (row.FACTURA_TIPO || defaultInvoiceType[cuit.registerType]).toUpperCase()
         if(!invoices[invoiceType]) {
           invoices[invoiceType] = []
         }
         let nextNumber = +number[invoiceType] + invoices[invoiceType]?.length;
         const columns = Object.keys(row)
         const items = columns.reduce((items: {[k:string]: InvoiceItem}, column) => {
-          const columnSplit = column.match(/(descripcion|unidades|iva|unitario)_(\d+)/gi)
+          const columnSplit = column.match(/(descripcion|unidades|iva|unitario)_(\d+)/i)
           if(!columnSplit || !columnSplit[2] || !parseInt(columnSplit[2]) ) return items
           if (!items[columnSplit[2]]) items[columnSplit[2]] = {}
           const propName = ItemProps[columnSplit[1] as 'DESCRIPCION']
@@ -135,6 +135,7 @@ const ImportInvoices = () => {
           destinataryDocument: String(row.DNI),
           destinataryDocumentType: String(row.DNI).length === 8 ? '96' : '80',
           items: Object.values(items),
+          version: 'v2'
         }));
         return invoices
       },{});
@@ -245,7 +246,7 @@ const ImportInvoices = () => {
               data = data.concat(
                 XLSX.utils.sheet_to_json(workbook.Sheets[sheet])
               );
-              // break; // If you only take the first table, uncomment this line
+              break; // If you only take the first table, uncomment this line
             }
           }
           if (data.length <= 0) {

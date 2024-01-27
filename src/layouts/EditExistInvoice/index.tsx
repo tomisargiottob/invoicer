@@ -23,6 +23,9 @@ import { createInvoice, getInvoices, getNextInvoiceNumber } from '../../requests
 import { setCuitBalances, setCuitInvoices } from '../../store/CuitSlice';
 import { getBalances } from '../../requests/balanceRequests';
 import { RegisterTypes, defaultInvoiceType } from '../../class/Profile/types/RegisterTypes';
+import InvoiceV1 from '../../class/Invoice/InvoiceV1';
+import { InvoiceItem } from '../../class/Invoice/interface/IInvoice';
+import ItemCreation from '../NewInvoice/ItemCreation';
 
 const EditExistInvoice = () => {
   const navigate = useNavigate();
@@ -34,10 +37,13 @@ const EditExistInvoice = () => {
   const [destinataryDocumentType, setDestinataryDocumentType] =
     useState<ISelectItemProps | null>(null);
   const [destinataryDocument, setDestinataryDocument] = useState('');
-  const [description, setDescription] = useState('');
-  const [units, setUnits] = useState(0);
-  const [unitValue, setUnitValue] = useState(0.0);
-  const [total, setTotal] = useState(0);
+  const [items, setItems] = useState<any[]>([{
+    id: 0,
+    description: '',
+    iva: 0,
+    unitValue: 0,
+    units: 0,
+  }])
   const [errors, setErrors] = useState<Array<string> | null>(null);
 
   const invoiceNumber = params.getAll('invoiceNumber')[0];
@@ -61,10 +67,7 @@ const EditExistInvoice = () => {
           ? { value: '96', message: 'DNI' }
           : { value: '80', message: 'CUIT' }
       );
-      setDescription(invoice.description);
-      setUnits(invoice.units);
-      setUnitValue(invoice.unitValue);
-      setTotal(invoice.total);
+      setItems(invoice.items)
     }
   }, [invoiceNumber, navigate]);
 
@@ -107,13 +110,11 @@ const EditExistInvoice = () => {
         destinatary,
         destinataryDocument,
         destinataryDocumentType: String(destinataryDocumentType?.value),
-        description,
-        units,
-        unitValue,
-        total,
+        items,
         status: StatusTypes.PENDING,
         asociatedInvoice: cuit.invoices.find((invoice) => invoice._id === cuit.currentInvoice)?.number,
         invoiceType: invoiceType!,
+        version: 'v2'
       });
       await createInvoice({ user, cuit: cuit.id, invoice })
       navigate('/');
@@ -175,16 +176,16 @@ const EditExistInvoice = () => {
                 cuit.cuit
               })`}
             />
-          </div>
-          <div className="edit-invoice-card-body-item">
             <Input
               label="DESTINATARIO"
-              containerStyle={{ width: '100%' }}
+              containerStyle={{ width: '50%' }}
               onChange={(event) => {
                 setDestinatary(event.target.value);
               }}
               value={destinatary}
             />
+          </div>
+          <div className="edit-invoice-card-body-item">
           </div>
           <div className="edit-invoice-card-body-item">
             <Select
@@ -209,43 +210,7 @@ const EditExistInvoice = () => {
               value={destinataryDocument}
             />
           </div>
-          <div className="edit-invoice-card-body-item">
-            <Input
-              label="DESCRIPCION"
-              containerStyle={{ width: '100%' }}
-              onChange={(event) => {
-                setDescription(event.target.value);
-              }}
-              value={description}
-            />
-          </div>
-          <div className="edit-invoice-card-body-item">
-            <Input
-              label="UNIDADES"
-              containerStyle={{ width: '15%' }}
-              type="number"
-              onChange={(event) => {
-                setUnits(Number(event.target.value));
-                setTotal(Number(event.target.value) * unitValue);
-              }}
-              value={String(units)}
-            />
-            <Input
-              label="VALOR UNITARIO"
-              containerStyle={{ width: '15%' }}
-              type="number"
-              onChange={(event) => {
-                setUnitValue(Number(event.target.value));
-                setTotal(Number(event.target.value) * units);
-              }}
-              value={String(unitValue)}
-            />
-            <LabelValue
-              label="TOTAL"
-              value={`$ ${total}`}
-              containerStyle={{ width: '70%' }}
-            />
-          </div>
+          <ItemCreation items={items} setItems={setItems}></ItemCreation>
         </div>
         <div className="edit-invoice-card-footer">
           <SecondaryButton onClick={() => navigate('/')}>
