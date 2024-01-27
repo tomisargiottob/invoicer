@@ -38,10 +38,9 @@ const ImportInvoices = () => {
       FACTURA_TIPO: InvoiceTypes;
       DNI: string;
       DIRECCION: string;
+      PERIODO_DESDE?: number | Date,
+      PERIODO_HASTA?: number | Date,
       DESCRIPCION: string;
-      UNIDADES: string;
-      UNITARIO: string;
-      TOTAL: string;
     }>
   >([]);
   const dispatch = useDispatch()
@@ -97,6 +96,8 @@ const ImportInvoices = () => {
     try {
       dataExcel.forEach((row) => {
         row.FECHA = typeof row.FECHA === 'number' ? ExcelDateToJSDate(row.FECHA) : new Date()
+        row.PERIODO_DESDE = typeof row.PERIODO_DESDE === 'number' ? ExcelDateToJSDate(row.PERIODO_DESDE) : undefined
+        row.PERIODO_HASTA = typeof row.PERIODO_HASTA === 'number' ? ExcelDateToJSDate(row.PERIODO_HASTA) : undefined
       })
       dataExcel.sort((prev, next) => {
         const prevValue = (prev.FECHA as Date).getTime()
@@ -125,16 +126,24 @@ const ImportInvoices = () => {
           items[columnSplit[2]][propName] = row[column as 'DESCRIPCION']
           return items
         },{})
+        const parsedItems = Object.values(items).map((item) => {
+          if(item.iva === undefined) {
+            item.iva = cuit.vat
+          }
+          return item
+        })
         invoices[invoiceType].push(new Invoice({
           _id: uuid(),
           number: nextNumber,
           date: row.FECHA as Date,
           invoiceType: row.FACTURA_TIPO || defaultInvoiceType[cuit.registerType],
+          startDate: row.PERIODO_DESDE as Date,
+          endDate: row.PERIODO_HASTA as Date,
           status: StatusTypes.PENDING,
           destinatary: row.NOMBRE_COMPLETO,
           destinataryDocument: String(row.DNI),
           destinataryDocumentType: String(row.DNI).length === 8 ? '96' : '80',
-          items: Object.values(items),
+          items: parsedItems,
           version: 'v2'
         }));
         return invoices

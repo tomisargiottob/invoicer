@@ -38,16 +38,17 @@ const NewInvoice = () => {
   const [destinataryDocument, setDestinataryDocument] = useState('');
   const [errors, setErrors] = useState<Array<string> | null>(null);
   const [disabled, setDisabled] = useState(false);
+  const cuit = useAppSelector((state) => state.cuit)
+
   const [items, setItems] = useState<any[]>([{
     id: 0,
     description: '',
-    iva: 0,
+    iva: cuit.vat || 0,
     unitValue: 0,
     units: 0,
   }])
 
   const user = useAppSelector((state) => state.user)
-  const cuit = useAppSelector((state) => state.cuit)
   const dispatch = useDispatch()
   useEffect(() => {
     if(cuit.registerType === RegisterTypes.MONOTRIBUTO && !invoiceType) {

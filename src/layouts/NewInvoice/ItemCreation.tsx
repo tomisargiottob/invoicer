@@ -6,14 +6,16 @@ import Select, { ISelectItemProps } from "../../components/Select"
 import { faTrash } from "@fortawesome/free-solid-svg-icons"
 import SecondaryButton from "../../components/SecondaryButton"
 import { Dispatch, SetStateAction, useEffect } from "react"
+import { useAppSelector } from "../../store/store"
 
 const ItemCreation = ({items, setItems}: {items: InvoiceItem[], setItems: Dispatch<SetStateAction<any>>}) => {
+    const cuit = useAppSelector((state) => state.cuit)
     useEffect(() => {
         if(items.length === 0) {
           setItems([{
             id: 0,
             description: '',
-            iva: 0,
+            iva: cuit.vat ?? 0,
             unitValue: 0,
             units: 0,
           }])
