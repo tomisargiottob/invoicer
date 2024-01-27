@@ -1,5 +1,5 @@
 import './index.css';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import Toastify from 'toastify-js';
 import Button from '../../components/Button';
@@ -22,6 +22,10 @@ import { setCuitBalances, setCuitInvoices } from '../../store/CuitSlice';
 import { useDispatch } from 'react-redux';
 import { getBalances } from '../../requests/balanceRequests';
 import { RegisterTypes, defaultInvoiceType } from '../../class/Profile/types/RegisterTypes';
+import { InvoiceItem } from '../../class/Invoice/interface/IInvoice';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import ItemCreation from './ItemCreation';
 
 const NewInvoice = () => {
   const navigate = useNavigate();
@@ -32,12 +36,15 @@ const NewInvoice = () => {
   const [destinataryDocumentType, setDestinataryDocumentType] =
     useState<ISelectItemProps | null>(null);
   const [destinataryDocument, setDestinataryDocument] = useState('');
-  const [description, setDescription] = useState('');
-  const [units, setUnits] = useState(0);
-  const [unitValue, setUnitValue] = useState(0.0);
-  const [total, setTotal] = useState(0);
   const [errors, setErrors] = useState<Array<string> | null>(null);
   const [disabled, setDisabled] = useState(false);
+  const [items, setItems] = useState<any[]>([{
+    id: 0,
+    description: '',
+    iva: 0,
+    unitValue: 0,
+    units: 0,
+  }])
 
   const user = useAppSelector((state) => state.user)
   const cuit = useAppSelector((state) => state.cuit)
@@ -74,6 +81,12 @@ const NewInvoice = () => {
     }
   }, [invoiceType]);
 
+  const invoiceTotal = useMemo(() => {
+    return items.reduce((total, item) => {
+      total += item.unitValue * item.units
+      return total
+    },0)
+  },[items])
   const addInvoice = async () => {
     try {
       setErrors(null);
@@ -84,14 +97,10 @@ const NewInvoice = () => {
         destinatary,
         destinataryDocument,
         destinataryDocumentType: String(destinataryDocumentType?.value),
-        items: [{
-          description,
-          units,
-          unitValue,
-          iva: ''
-        }],
+        items,
         invoiceType: invoiceType!,
         status: StatusTypes.PENDING,
+        version: 'v2'
       });
 
       await createInvoice({user, cuit: cuit.id, invoice})
@@ -192,48 +201,19 @@ const NewInvoice = () => {
             </Select>
             <Input
               label="DOCUMENTO DESTINATARIO"
-              containerStyle={{ width: '65%' }}
+              containerStyle={{ width: '45%' }}
               onChange={(event) => {
                 setDestinataryDocument(event.target.value);
               }}
               value={destinataryDocument}
             />
-          </div>
-          <div className="new-invoice-card-body-item amount-section">
-            <Input
-              label="DESCRIPCION"
-              containerStyle={{ width: '50%' }}
-              onChange={(event) => {
-                setDescription(event.target.value);
-              }}
-              value={description}
-            />
-            <Input
-              label="UNIDADES"
-              containerStyle={{ width: '10%' }}
-              type="number"
-              onChange={(event) => {
-                setUnits(Number(event.target.value));
-                setTotal(Number(event.target.value) * unitValue);
-              }}
-              value={String(units)}
-            />
-            <Input
-              label="VALOR UNITARIO"
-              containerStyle={{ width: '15%' }}
-              type="number"
-              onChange={(event) => {
-                setUnitValue(Number(event.target.value));
-                setTotal(Number(event.target.value) * units);
-              }}
-              value={String(unitValue)}
-            />
             <LabelValue
-              label="TOTAL"
-              value={`$ ${total}`}
-              containerStyle={{ width: '15%' }}
+              label='Total Factura'
+              value={`${invoiceTotal.toLocaleString()} $` }
+              containerStyle={{width: '15%', marginLeft: '50px'}}
             />
           </div>
+          <ItemCreation items={items} setItems={setItems}></ItemCreation>
         </div>
         <div className="new-invoice-card-footer">
           <SecondaryButton onClick={() => navigate('/')}>
