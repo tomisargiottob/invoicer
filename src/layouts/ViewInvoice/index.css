@@ -29,7 +29,8 @@
 
 .multiple-items-results{
   display: grid;
-  grid-template-columns: 35% 30% 35%
+  margin-top: 20px;
+  grid-template-columns: 20% 20% 20% 20% 20%;
 }
 
 .view-invoice-card-footer{
