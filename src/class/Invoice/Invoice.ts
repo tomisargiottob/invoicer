@@ -19,6 +19,8 @@ class Invoice {
 
   public destinataryDocument: string;
 
+  public destinataryAddress: string;
+
   public items: InvoiceItem[]
 
   public startDate?: Date
@@ -30,6 +32,8 @@ class Invoice {
   public reason: string;
 
   public cae: string;
+
+  public caeExpirationDate?: string
 
   public asociatedInvoice?: number
 
@@ -48,6 +52,7 @@ class Invoice {
       destinatary,
       destinataryDocumentType,
       destinataryDocument,
+      destinataryAddress,
       items,
       status,
       reason,
@@ -65,6 +70,7 @@ class Invoice {
     this.destinatary = destinatary;
     this.destinataryDocumentType = destinataryDocumentType;
     this.destinataryDocument = destinataryDocument;
+    this.destinataryAddress = destinataryAddress;
     this.items = items;
     this.startDate = startDate,
     this.endDate = endDate;
@@ -97,7 +103,7 @@ class Invoice {
           'Producto debe tener una descripcion'
         );
       }
-      if (!item.iva) {
+      if (item.iva === undefined) {
         errors.push(
           'Producto debe tener un iva'
         );

@@ -5,7 +5,7 @@ export interface InvoiceItem {
   id?: number
   description?: string,
   units?: number,
-  iva?: number,
+  iva?: number | string,
   unitValue?: number
 }
 
@@ -43,6 +43,7 @@ export type IInvoiceV2 = {
   readonly destinatary: string;
   readonly destinataryDocumentType: string;
   readonly destinataryDocument: string;
+  readonly destinataryAddress: string;
   readonly items: InvoiceItem[]
   readonly startDate?: Date
   readonly endDate?: Date

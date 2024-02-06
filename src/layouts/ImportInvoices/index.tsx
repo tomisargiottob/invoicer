@@ -143,6 +143,7 @@ const ImportInvoices = () => {
           destinatary: row.NOMBRE_COMPLETO,
           destinataryDocument: String(row.DNI),
           destinataryDocumentType: String(row.DNI).length === 8 ? '96' : '80',
+          destinataryAddress: row.DIRECCION,
           items: parsedItems,
           version: 'v2'
         }));
