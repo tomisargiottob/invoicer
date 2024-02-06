@@ -19,6 +19,7 @@ import InvoiceV1View from './InvoiceV1';
 import InvoiceV1 from '../../class/Invoice/InvoiceV1';
 import InvoiceV2View from './InvoiceV2';
 import PDFDownloadV2 from '../../components/PdfDownload/PdfDownloadV2';
+import { format, parseISO } from 'date-fns';
 
 const ViewInvoice = () => {
   const [params] = useSearchParams();
@@ -121,12 +122,18 @@ const ViewInvoice = () => {
               value={invoice ? <StatusLabel status={invoice.status} /> : ''}
               containerStyle={{ width: '50%' }}
             />
-            {invoice && invoice.status === 'PROCESSED' && (
+            {invoice && invoice.status === 'PROCESSED' && (<>
               <LabelValue
                 label="CAE:"
                 value={invoice ? invoice.cae : ''}
                 containerStyle={{ width: '50%' }}
               />
+               <LabelValue
+                label="VTO DE CAE:"
+                value={(invoice as Invoice)?.caeExpirationDate ? format(parseISO((invoice as Invoice)?.caeExpirationDate!), 'dd/MM/yyyy') : ''}
+                containerStyle={{ width: '50%' }}
+              />
+            </>
             )}
             {invoice && invoice.status === 'REJECTED' && (
               <LabelValue
