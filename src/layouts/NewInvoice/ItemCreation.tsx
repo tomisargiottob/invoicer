@@ -94,7 +94,7 @@ const ItemCreation = ({items, setItems}: {items: InvoiceItem[], setItems: Dispat
             </Select>
             <LabelValue
               label='MONTO IVA'
-              value={`${((item.units || 0) * (item.unitValue || 0) * ( 1 - item.iva!/100 ) * item.iva!/100).toLocaleString()} $` }
+              value={isNaN(item.iva as number) ? '0 $' : `${((item.units || 0) * (item.unitValue || 0) * ( 1 - item.iva!/100 ) * item.iva!/100).toLocaleString()} $` }
               containerStyle={{width: '20%'}}
             ></LabelValue>
             <LabelValue
