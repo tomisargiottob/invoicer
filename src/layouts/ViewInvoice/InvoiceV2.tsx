@@ -6,7 +6,7 @@ const InvoiceV2View = ({invoice}: {invoice: Invoice}) => {
     const invoiceTotal = useMemo(() => {
         return invoice.items.reduce((amount: {iva: number, grossAmount: number, netAmount: number, excentAmount: number, notTaxedAmount: number}, item) => {
             amount.netAmount += item.units! * item.unitValue!
-            if(item.iva?.toString().toLowerCase() === 'excento') {
+            if(item.iva?.toString().toLowerCase() === 'exento') {
                 amount.excentAmount += item.units! * item.unitValue!
                 return amount
             }
@@ -44,7 +44,7 @@ const InvoiceV2View = ({invoice}: {invoice: Invoice}) => {
         </div>
         <div className="multiple-items-results">
             <span className="labelvalue-label">TOTAL BRUTO</span>
-            <span className="labelvalue-label">TOTAL EXCENTO</span>
+            <span className="labelvalue-label">TOTAL EXENTO</span>
             <span className="labelvalue-label">TOTAL NO GRAVADO</span>
             <span className="labelvalue-label">TOTAL IVA</span>
             <span className="labelvalue-label">TOTAL FACTURA</span>

@@ -56,7 +56,7 @@ function PDFDownloadV2({invoice, cuit}: {invoice: Invoice, cuit: CuitAccount}) {
 
     const total = invoice.items.reduce((amount: {iva: {[k: string]: number}, grossAmount: number, netAmount: number, excentAmount: number, notTaxedAmount: number}, item) => {
       amount.netAmount += item.units! * item.unitValue!
-      if (item.iva?.toString().toLowerCase() === 'excento') {
+      if (item.iva?.toString().toLowerCase() === 'exento') {
         amount.excentAmount += item.units! * item.unitValue!
         return amount
       }
@@ -171,7 +171,7 @@ function PDFDownloadV2({invoice, cuit}: {invoice: Invoice, cuit: CuitAccount}) {
               <div className="borderDiv invoiceTotal vat-description">
                 <div className="vat-types">
                   {['A', 'NOTA_CREDITO_A'].includes(invoice.invoiceType) ? (<>
-                      <div className="label">Importe Excento: </div><div>$ {total.excentAmount}</div>
+                      <div className="label">Importe Exento: </div><div>$ {total.excentAmount}</div>
                       <div className="label">Importe No gravado: </div><div>$ {total.notTaxedAmount}</div>
                       <div className="label">Importe Neto gravado: </div><div>$ {total.grossAmount}</div>
                       <div className="label">Importe otros tributos: </div> <div>$ 0</div>
