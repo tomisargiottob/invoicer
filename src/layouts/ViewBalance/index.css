@@ -14,7 +14,7 @@
 }
 
 .view-balance-card-body {
-  padding: 15px 0px;
+  padding: 0px 0px;
 }
 
 .view-balance-card-body-item {
@@ -25,13 +25,12 @@
 }
 
 .view-balance-card-footer {
-  margin-top: 20px;
   display: flex;
   justify-content: space-around;
 }
 
 .timeline {
-  margin-top: 150px;
+  margin-top: 100px;
   list-style-type: none;
   display: flex;
   align-items: center;
@@ -94,10 +93,20 @@
   color: #0D658B;
 }
 
-@media (min-device-width: 320px) and (max-device-width: 700px) {
+@media only screen and (max-width: 768px) {
+  .view-balance-card-container {
+    min-height: 100vh;
+    min-width: 300px;
+    text-align: center;
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+  .view-balance-card-title .title{
+    padding-top: 10px;
+  }
   .timeline {
     list-style-type: none;
-    display: block;
+    /* display: block; */
   }
 
   .li {
@@ -111,8 +120,11 @@
   }
 
   .status:before {
-    left: -8%;
-    top: 30%;
+    left: -10;
+    top: -10;
     transition: all 200ms ease-in;
+  }
+  .view-balance-card-container .card-content {
+    padding: 0px;
   }
 }

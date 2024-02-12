@@ -13,12 +13,14 @@ import { useAppSelector } from '../../store/store';
 import {  CuitAccountInput } from '../../store/CuitSlice';
 import { useDispatch } from 'react-redux';
 import { setUserCuitAccounts } from '../../store/UserSlice';
-import TextArea from '../../components/TextArea';
 import Toastify from 'toastify-js';
 import 'toastify-js/src/toastify.css';
 import Dropzone from 'react-dropzone';
 import LabelValue from '../../components/LabelValue';
 import { RegisterTypes } from '../../class/Profile/types/RegisterTypes';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
+import { AllowedVats } from '../../class/Invoice/types/InvoiceTypes';
 
 const NewProfile = () => {
   const navigate = useNavigate();
@@ -30,6 +32,8 @@ const NewProfile = () => {
   const [address, setAddress] = useState('');
   const [certificate, setCertificate] = useState('');
   const [privateKey, setPrivateKey] = useState('');
+  const [staticVat, setStaticVat] = useState(true);
+  const [vat, setVat] = useState(21)
 
   const dispatch = useDispatch()
 
@@ -60,6 +64,9 @@ const NewProfile = () => {
   }
 
   const verifyForm = (profile: CuitAccountInput, validationErrors: string[])=> {
+    if (profile.staticVat && !AllowedVats.includes(profile.vat)) {
+      validationErrors.push('El iva indicado no esta permitido por afip, recuerde introducir unicamente el valor sin el simbolo %')
+    }
     if (!profile.fullname) validationErrors.push('Debe tener un nombre completo.');
     if (!RegExp(/[0-9]{2}-[0-9]+-[0-9]/g).test(profile.cuit))
       validationErrors.push('Debe tener un Cuit / Cuil valido (XX-XXXXXXXX-X)');
@@ -75,6 +82,7 @@ const NewProfile = () => {
 
   const [errors, setErrors] = useState<Array<string> | null>(null);
   const user = useAppSelector((state) => state.user)
+  const [needHelp, setNeedHelp] = useState(true)
 
   const createProfile = async () => {
     try {
@@ -88,7 +96,9 @@ const NewProfile = () => {
         address,
         initAct: initAct.toISOString(),
         certificate,
-        privateKey
+        privateKey,
+        staticVat,
+        vat,
       };
       verifyForm(profile, validationErrors)
       if(validationErrors.length) {
@@ -128,146 +138,182 @@ const NewProfile = () => {
         <div className="new-profile-card-title">
           <Title>Crea un nuevo Perfil</Title>
         </div>
-        <div className="new-profile-card-body">
-          <div className="new-profile-card-body-item">
-            <Input
-              label="NOMBRE COMPLETO"
-              containerStyle={{ width: '55%' }}
-              value={fullname}
-              onChange={(event) => setFullName(event.target.value)}
-            />
-            <Input
-              label="CUIT / CUIL"
-              containerStyle={{ width: '35%' }}
-              value={cuit}
-              onChange={(event) => cuitChange(event.target.value)}
-            />
-          </div>
-          <div className="new-profile-card-body-item">
-            <Input
-              label="PUNTO DE VENTA"
-              containerStyle={{ width: '25%' }}
-              value={salePoint}
-              onChange={(event) => setSalePoint(event.target.value)}
-            />
-            <Select
-              label="TIPO DE REGISTRO"
-              items={[
-                { value: 'MONOTRIBUTO', message: 'Monotributista' },
-                { value: 'RESPONSABLE_INSCRIPTO', message: 'Responsable inscripto' },
-              ]}
-              containerStyle={{ width: '25%' }}
-              onSelect={(selected: ISelectItemProps) => {
-                setRegisterType(selected);
-              }}
-            >
-              {registerType?.message || 'SELECCIONAR'}
-            </Select>
-            <Input
-              label="INICIO ACT."
-              containerStyle={{ width: '25%' }}
-              onChange={(event) => setInitAct(new Date(event.target.value))}
-              type="date"
-            />
-          </div>
-          <div className="new-profile-card-body-item">
-            <Input
-              label="DIRECCION COMERCIAL"
-              containerStyle={{ width: '100%' }}
-              value={address}
-              onChange={(event) => setAddress(event.target.value)}
-            />
-          </div>
-          <div className="new-profile-card-body-item">
+        {needHelp ? <div className="call-action">
             <div>
-              <Dropzone
-                onDrop={onImportPrivateKey}
-              >
-                {({
-                  getRootProps,
-                  getInputProps,
-                  isDragActive,
-                  isDragReject,
-                }) => {
-                return (
-                  <>
-                    <LabelValue label="CLAVE PRIVADA" value="" />
-                    <Input
-                      {...getInputProps()}
-                      // @ts-ignore
-                      id="adjuntarPlantilla"
-                      className="inputFileDriver"
-                      type="file"
-                    />
-
-                    <div
-                      className={
-                        isDragActive
-                          ? 'qbk-dragndrop__screen is-active'
-                          : 'qbk-dragndrop__screen'
-                      }
-                      {...getRootProps()}
-                      onChange={onImportPrivateKey}
-                    >
-                      <div className="textoLabel mt-1">
-                        {!isDragActive}
-                        {isDragActive && !isDragReject && 'Soltar y cargar'}
-                        {isDragReject &&
-                          'Archivo no aceptado. Por favor, intenta de nuevo'}
-                      </div>
-                    </div>
-                  </>
-                )}}
-              </Dropzone>
+              Ahora vamos a necesitar generar certificados en AFIP y darle permisos. Si necesitas ayuda, podes contactarte con nosotros para que te ayudemos a conectarlo
             </div>
-            <div>
-              <Dropzone
-                onDrop={onImportCertificate}
+            <div className="call-action-buttons">
+              <button onClick={()=> setNeedHelp(false)}>Ya sé hacerlo</button>
+              <a target='_blank' href="https://api.whatsapp.com/send?phone=5493516808415&text=Hola!%20Estoy%20intentando%20agregar%20un%20CUIT%20y%20necesito%20ayuda%20para%20crear%20certificado%20y%20clave%20privada%20en%20AFIP.">
+                <button>
+                  Contactarme
+                </button>
+              </a>
+            </div>
+          </div> :
+          <div className="new-profile-card-body">
+            <div className="new-profile-card-body-item">
+              <Input
+                label="NOMBRE COMPLETO"
+                containerStyle={{ width: '50%' }}
+                value={fullname}
+                onChange={(event) => setFullName(event.target.value)}
+              />
+              <Input
+                label="CUIT / CUIL"
+                containerStyle={{ width: '25%' }}
+                value={cuit}
+                onChange={(event) => cuitChange(event.target.value)}
+              />
+              <Select
+                label="TIPO DE REGISTRO"
+                items={[
+                  { value: 'MONOTRIBUTO', message: 'Monotributista' },
+                  { value: 'RESPONSABLE_INSCRIPTO', message: 'Responsable inscripto' },
+                ]}
+                containerStyle={{ width: '25%' }}
+                onSelect={(selected: ISelectItemProps) => {
+                  setRegisterType(selected);
+                }}
               >
-                {({
-                  getRootProps,
-                  getInputProps,
-                  isDragActive,
-                  isDragReject,
-                }) => {
-                return (
-                  <>
-                    <LabelValue label="CERTIFICADO" value="" />
-                    <Input
-                      {...getInputProps()}
-                      // @ts-ignore
-                      id="adjuntarPlantilla"
-                      className="inputFileDriver"
-                      type="file"
-                    />
+                {registerType?.message || 'SELECCIONAR'}
+              </Select>
+            </div>
+            <div className="new-profile-card-body-item">
+              <Input
+                label="PUNTO DE VENTA"
+                containerStyle={{ width: '50%' }}
+                value={salePoint}
+                onChange={(event) => setSalePoint(event.target.value)}
+              />
+              <Input
+                label="INICIO ACT."
+                containerStyle={{ width: '50%' }}
+                onChange={(event) => setInitAct(new Date(event.target.value))}
+                type="date"
+                />
+              { registerType?.value === 'RESPONSABLE_INSCRIPTO' && (<>
+              {/* <div className='tooltip-container'>
+                <Input
+                  label="IVA"
+                  onChange={(event) => setStaticVat(event.target.checked)}
+                  type="checkbox"
+                  inputStyle={{marginLeft: '0px'}}
+                />
+                <span className='question-icon'>
+                  <FontAwesomeIcon icon={faQuestionCircle} title='Seleccione si todos los productos facturados tendrán un mismo IVA'/>
+                </span>
+              </div> */}
+              {staticVat && <Input
+                label="PORCENTAJE DE IVA"
+                containerStyle={{ width: '25%' }}
+                onChange={(event) => setVat(+event.target.value)}
+                value={String(vat)}
+                type="text"
+                step={0.5}
+              />}</>)
+              }
+            </div>
+            <div className="new-profile-card-body-item">
+              <Input
+                label="DIRECCION COMERCIAL"
+                containerStyle={{ width: '100%' }}
+                value={address}
+                onChange={(event) => setAddress(event.target.value)}
+              />
+            </div>
+            <div className="new-profile-card-body-item cert-dropzones">
+              <div>
+                <Dropzone
+                  onDrop={onImportPrivateKey}
+                >
+                  {({
+                    getRootProps,
+                    getInputProps,
+                    isDragActive,
+                    isDragReject,
+                  }) => {
+                  return (
+                    <>
+                      <LabelValue label="CLAVE PRIVADA" value="" />
+                      <Input
+                        {...getInputProps()}
+                        // @ts-ignore
+                        id="adjuntarPlantilla"
+                        className="inputFileDriver"
+                        type="file"
+                      />
 
-                    <div
-                      className={
-                        isDragActive
-                          ? 'qbk-dragndrop__screen is-active'
-                          : 'qbk-dragndrop__screen'
-                      }
-                      {...getRootProps()}
-                      onChange={onImportCertificate}
-                    >
-                      <div className="textoLabel mt-1">
-                        {!isDragActive}
-                        {isDragActive && !isDragReject && 'Soltar y cargar'}
-                        {isDragReject &&
-                          'Archivo no aceptado. Por favor, intenta de nuevo'}
+                      <div
+                        className={
+                          isDragActive
+                            ? 'qbk-dragndrop__screen is-active'
+                            : 'qbk-dragndrop__screen'
+                        }
+                        {...getRootProps()}
+                        onChange={onImportPrivateKey}
+                      >
+                        <div className="textoLabel mt-1">
+                          {!isDragActive}
+                          {isDragActive && !isDragReject && 'Soltar y cargar'}
+                          {isDragReject &&
+                            'Archivo no aceptado. Por favor, intenta de nuevo'}
+                        </div>
                       </div>
-                    </div>
-                  </>
-                )}}
-              </Dropzone>
+                    </>
+                  )}}
+                </Dropzone>
+              </div>
+              <div>
+                <Dropzone
+                  onDrop={onImportCertificate}
+                >
+                  {({
+                    getRootProps,
+                    getInputProps,
+                    isDragActive,
+                    isDragReject,
+                  }) => {
+                  return (
+                    <>
+                      <LabelValue label="CERTIFICADO" value="" />
+                      <Input
+                        {...getInputProps()}
+                        // @ts-ignore
+                        id="adjuntarPlantilla"
+                        className="inputFileDriver"
+                        type="file"
+                        
+                      />
+
+                      <div
+                        className={
+                          isDragActive
+                            ? 'qbk-dragndrop__screen is-active'
+                            : 'qbk-dragndrop__screen'
+                        }
+                        {...getRootProps()}
+                        onChange={onImportCertificate}
+                      >
+                        <div className="textoLabel mt-1">
+                          {!isDragActive}
+                          {isDragActive && !isDragReject && 'Soltar y cargar'}
+                          {isDragReject &&
+                            'Archivo no aceptado. Por favor, intenta de nuevo'}
+                        </div>
+                      </div>
+                    </>
+                  )}}
+                </Dropzone>
+              </div>
             </div>
           </div>
-        </div>
+        }
         <div className="new-profile-card-footer">
           <SecondaryButton onClick={() => navigate('/')}>
             VOLVER
           </SecondaryButton>
-          <Button onClick={createProfile}>CREAR NUEVO PERFIL</Button>
+          { !needHelp && <Button onClick={createProfile}>CREAR NUEVO PERFIL</Button> }
         </div>
         {errors && (
           <ErrorMessage>

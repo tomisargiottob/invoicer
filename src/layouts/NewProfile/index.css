@@ -30,3 +30,65 @@
   display: flex;
   justify-content: space-around;
 }
+
+.tooltip-container{
+  display: flex;
+  flex-direction: row;
+  width: 25%;
+}
+.question-icon{
+  position: relative;
+  top: 11px;
+  margin-left: 10px;
+  cursor: help;
+}
+.call-action{
+  width: 40%;
+  margin: 0 auto;
+  margin-top: 20px;
+  text-align: center;
+}
+
+.call-action-buttons{
+  margin-top: 20px;
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+}
+.call-action-buttons button{
+  padding: 10px;
+  border-radius: 8px;
+  background: white;
+  border: 1px solid #0D658B;
+  cursor: pointer;
+  color: #0D658B;
+}
+
+@media only screen and (max-width: 768px) {
+  .new-profile-card-container {
+    min-width: 200px;
+  }
+  .new-profile-card-body-item {
+    flex-wrap: wrap !important;
+    gap: 15px;
+    justify-content: flex-start;
+  }
+  .cert-dropzones {
+    max-width: 600px;
+    overflow: hidden;
+  }
+  .view-invoice-card-container .card-content {
+    padding: 15px;
+  }
+  .view-invoice-card-container button {
+    padding: 15px;
+    margin-right: 10px;
+  }
+
+  .call-action{
+    width: 100%;
+    margin: 0 auto;
+    margin-top: 20px;
+    text-align: center;
+  }
+}

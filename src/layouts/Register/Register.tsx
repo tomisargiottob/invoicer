@@ -28,13 +28,19 @@ function Register() {
   }, [navigate]);
 
   const validateName = (_:any, value: string) => {
-    return value.length >= 4 ? Promise.resolve() : Promise.reject(new Error("Name need minimum of 4 characters"))
+    return value.length >= 4 ? Promise.resolve() : Promise.reject(new Error("El nombre debe tener al menos 4 caracteres"))
   }
 
   const validatePassword = (_:any, value: string) => {
     const validationRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-    return validationRegex.test(value) ? Promise.resolve() : Promise.reject(new Error("Password does not matches the criteria"))
+    return validationRegex.test(value) ? Promise.resolve() : Promise.reject(new Error("La contraseña no cumple los criterios"))
   }
+
+  const validateEmail = (_:any, value: string) => {
+    const validationRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    return validationRegex.test(value) ? Promise.resolve() : Promise.reject(new Error("El mail no es valido"))
+  }
+
 
   return (
     <div className="register">
@@ -44,19 +50,19 @@ function Register() {
           <Form layout="vertical" onFinish={onFinish}>
             <h1>REGISTER</h1>
 
-            <Form.Item label="Name" name="name"
-                       rules={[{message: "Name should have minimum 4 characters!", validator: validateName, required: true}]}>
+            <Form.Item label="Nombre" name="name"
+                       rules={[{message: "El nombre debe tener al menos 4 letras!", validator: validateName, required: true}]}>
               <Input />
             </Form.Item>
-            <Form.Item label="Organization Name" name="organization" rules={[ { message: "Please enter your organization name!", required: true } ]}>
+            <Form.Item label="Nombre de la organización" tooltip="Puede ser el mismo que el nombre" name="organization" rules={[ { message: "Por favor ingrese un nombre a la organización!", required: true } ]}>
               <Input />
             </Form.Item>
-            <Form.Item label="Email" name="email"
-                       rules={[{message: "Email should be valid!", type: "email", required: true}]}>
+            <Form.Item label="Correo" name="email"
+                rules={[{message: "El email no parece valido", validator: validateEmail, required: true}]}>
               <Input />
             </Form.Item>
-            <Form.Item label="Password" name="password"
-                       rules={[{message: "Password must contain at least 8 characters, includes 1 number, 1 lowercase and uppercase letters and 1 special character", validator: validatePassword, required: true}]}>
+            <Form.Item label="Contraseña" name="password"
+                       rules={[{message: "La contraseña debe tener 8 caracteres minimo, con al menos una mayuscula, minuscula, un numero y caracter especial", validator: validatePassword, required: true}]}>
               <Input type="password" />
             </Form.Item>
 

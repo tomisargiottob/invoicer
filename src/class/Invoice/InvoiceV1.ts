@@ -1,10 +1,10 @@
 import { v4 as uuidv4 } from 'uuid';
 import StatusTypes from './types/StatusTypes';
 import InvoiceTypes from './types/InvoiceTypes';
-import IInvoice, { IInvoiceV2, InvoiceItem } from './interface/IInvoice';
+import {IInvoiceV1} from './interface/IInvoice';
 import ValidationException from './Exceptions/ValidationException';
 
-class Invoice {
+class InvoiceV1 {
   public _id?: string;
 
   public number: number;
@@ -19,13 +19,13 @@ class Invoice {
 
   public destinataryDocument: string;
 
-  public destinataryAddress: string;
+  public description: string;
 
-  public items: InvoiceItem[]
+  public units: number;
 
-  public startDate?: Date
+  public unitValue: number;
 
-  public endDate?: Date
+  public total: number;
 
   public status: StatusTypes;
 
@@ -33,36 +33,44 @@ class Invoice {
 
   public cae: string;
 
-  public caeExpirationDate?: string
-
   public asociatedInvoice?: number
 
   public version: string
 
-  constructor(invoiceData: IInvoice) {
-    const errors = Invoice.validate(invoiceData);
-    
-    if (errors.length > 0) throw new ValidationException(errors);
-
-    const {
-      _id,
+  constructor({
+    _id,
+    number,
+    date,
+    invoiceType,
+    destinatary,
+    destinataryDocumentType,
+    destinataryDocument,
+    description,
+    units,
+    unitValue,
+    total,
+    status,
+    reason,
+    cae,
+    asociatedInvoice,
+    version
+  }: IInvoiceV1) {
+    const errors = InvoiceV1.validate({
       number,
       date,
       invoiceType,
       destinatary,
       destinataryDocumentType,
       destinataryDocument,
-      destinataryAddress,
-      items,
+      description,
+      units,
+      unitValue,
       status,
-      reason,
-      cae,
-      startDate,
-      endDate,
-      asociatedInvoice,
-      version
-    } = invoiceData as IInvoiceV2
-    
+      total,
+      version: version || 'v1',
+    });
+    if (errors.length > 0) throw new ValidationException(errors);
+
     this._id = _id || uuidv4();
     this.number = number;
     this.date = date;
@@ -70,24 +78,28 @@ class Invoice {
     this.destinatary = destinatary;
     this.destinataryDocumentType = destinataryDocumentType;
     this.destinataryDocument = destinataryDocument;
-    this.destinataryAddress = destinataryAddress;
-    this.items = items;
-    this.startDate = startDate,
-    this.endDate = endDate;
+    this.description = description;
+    this.units = units;
+    this.unitValue = unitValue;
+    this.total = total;
     this.status = status;
     this.reason = reason || '';
     this.cae = cae || '';
     this.asociatedInvoice= asociatedInvoice;
-    this.version = version || 'v2'
+    this.version = version
   }
 
-  public static validate(invoiceData: IInvoice) {
+  public static validate({
+    number,
+    date,
+    destinatary,
+    destinataryDocumentType,
+    destinataryDocument,
+    description,
+    units,
+    unitValue,
+  }: IInvoiceV1) {
     const errors = [];
-    if(invoiceData.version === 'v1') {
-      errors.push('V1 Invoices are not supported any longer')
-      return errors
-    }
-    const {number, date, destinatary, destinataryDocument, destinataryDocumentType, items} = invoiceData
     if (!number) errors.push('Debe tener un numero de Factura.');
     if (!date) errors.push('Debe contener una fecha.');
     if (!destinatary) errors.push('Debe tener un destinatario.');
@@ -97,31 +109,12 @@ class Invoice {
       errors.push(
         'Debe tener un documento valido (XXXXXXXX) sin guiones en caso de CUIL o CUIT'
       );
-    for(const item of items) {
-      if (!item.description) {
-        errors.push(
-          'Producto debe tener una descripcion'
-        );
-      }
-      if (item.iva === undefined) {
-        errors.push(
-          'Producto debe tener un iva'
-        );
-      }
-      if (!item.unitValue) {
-        errors.push(
-          'Producto debe tener una descripcion'
-        );
-      }
-      if (!item.units) {
-        errors.push(
-          'Producto debe tener una cantidad de unidades'
-        );
-      }
-    }
+    if (!description) errors.push('Debe tener una descripcion.');
+    if (units <= 0) errors.push('Debe tener al menos una unidad.');
+    if (unitValue <= 0) errors.push('Debe tener un valor unitario mayor a 0.');
 
     return errors;
   }
 }
 
-export default Invoice;
+export default InvoiceV1;

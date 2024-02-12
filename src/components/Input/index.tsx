@@ -9,6 +9,7 @@ interface InputProps {
   onChange?: ChangeEventHandler<HTMLInputElement>;
   type?: string;
   placeholder?: string;
+  step?: number
 }
 
 const Input = ({
@@ -19,6 +20,7 @@ const Input = ({
   onChange,
   type = 'text',
   placeholder,
+  step
 }: InputProps) => {
   return (
     <div className="input-container" style={containerStyle}>
@@ -30,6 +32,7 @@ const Input = ({
         value={value}
         onChange={onChange}
         placeholder={placeholder}
+        step={step}
       />
     </div>
   );

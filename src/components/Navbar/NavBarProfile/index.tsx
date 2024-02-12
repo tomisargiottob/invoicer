@@ -7,6 +7,7 @@ import { useAppSelector } from '../../../store/store';
 import { CuitAccount, CuitAccountInput, unsetCuitAccount } from '../../../store/CuitSlice';
 import { useDispatch } from 'react-redux';
 import { Dispatch, SetStateAction } from 'react';
+import { unsetUser } from '../../../store/UserSlice';
 
 const NavBarProfile = ({
   setProfileOpen,
@@ -22,6 +23,8 @@ const NavBarProfile = ({
     navigate('/newProfile');
   };
   const onClickLogOut = () => {
+    dispatch(unsetCuitAccount())
+    dispatch(unsetUser())
     localStorage.removeItem("logged_user");
     navigate("/login");
   }
@@ -29,10 +32,14 @@ const NavBarProfile = ({
   const handleUserChange = () => {
     dispatch(unsetCuitAccount())
     setProfileOpen(false)
+    navigate('/')
   }
 
   return (
     <div className="navbar-profile-container">
+      <SecondaryButton style={{ padding: 10 }} onClick={() => navigate('/profile')}>
+        Perfil
+      </SecondaryButton>
       <SecondaryButton style={{ padding: 10 }} onClick={handleUserChange}>
         Cambiar de Usuario
       </SecondaryButton>

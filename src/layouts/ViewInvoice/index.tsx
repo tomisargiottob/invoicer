@@ -15,13 +15,18 @@ import { useAppSelector } from '../../store/store';
 import { jsPDF } from "jspdf";
 import PDFDownload from '../../components/PdfDownload';
 import * as ReactDOMServer from 'react-dom/server';
+import InvoiceV1View from './InvoiceV1';
+import InvoiceV1 from '../../class/Invoice/InvoiceV1';
+import InvoiceV2View from './InvoiceV2';
+import PDFDownloadV2 from '../../components/PdfDownload/PdfDownloadV2';
+import { format, parseISO } from 'date-fns';
 
 const ViewInvoice = () => {
   const [params] = useSearchParams();
   const navigate = useNavigate();
   const cuit = useAppSelector((state) => state.cuit)
   const id = params.getAll('invoiceNumber')[0];
-  const [invoice, setInvoice] = useState<Invoice | null>(null);
+  const [invoice, setInvoice] = useState<Invoice | InvoiceV1 | null>(null);
   useEffect(() => {
     if (id === undefined) navigate('/');
     const invoice = cuit.invoices.find((invoice) => invoice._id === id)
@@ -48,11 +53,19 @@ const ViewInvoice = () => {
       format: "a4",
       unit: "px"
     });
-    doc.html(ReactDOMServer.renderToStaticMarkup(<PDFDownload invoice={invoice!} cuit={cuit}></PDFDownload>), {
-      async callback(doc: any) {
-        doc.save(`Factura N${invoice?.number} ${cuit.fullname}`);
-      }
-    });
+    if (invoice?.version === 'v1') {
+      doc.html(ReactDOMServer.renderToStaticMarkup(<PDFDownload invoice={invoice! as InvoiceV1} cuit={cuit}></PDFDownload>), {
+        async callback(doc: any) {
+          doc.save(`Factura N${invoice?.number} ${cuit.fullname}`);
+        }
+      });
+    } else if (invoice?.version === 'v2') {
+      doc.html(ReactDOMServer.renderToStaticMarkup(<PDFDownloadV2 invoice={invoice! as Invoice} cuit={cuit}></PDFDownloadV2>), {
+        async callback(doc: any) {
+          doc.save(`Factura N${invoice?.number} ${cuit.fullname}`);
+        }
+      });
+    }
   };
 
   const typeInvoiceMessage = () => {
@@ -91,52 +104,36 @@ const ViewInvoice = () => {
               value={invoice ? cuit.fullname : ''}
               containerStyle={{ width: '33%' }}
             />
-          </div>
-          <div className="view-invoice-card-item">
             <LabelValue
-              label="DESTINATARIO:"
-              value={
+            label="DESTINATARIO:"
+            value={
                 invoice
-                  ? `${invoice.destinatary} (${invoice.destinataryDocument})`
-                  : ''
-              }
-              containerStyle={{ width: '33%' }}
+                ? `${invoice.destinatary} (${invoice.destinataryDocument})`
+                : ''
+            }
+            containerStyle={{ width: '50%' }}
             />
-            <LabelValue
-              label="DESCRIPCION:"
-              value={invoice ? invoice.description : ''}
-              containerStyle={{ width: '33%' }}
-            />
+    
           </div>
-          <div className="view-invoice-card-item">
-            <LabelValue
-              label="UNIDADES:"
-              value={invoice ? `${invoice.units} u.` : ''}
-              containerStyle={{ width: '33%' }}
-            />
-            <LabelValue
-              label="VALOR UNITARIO:"
-              value={invoice ? `$ ${invoice.unitValue}` : ''}
-              containerStyle={{ width: '33%' }}
-            />
-            <LabelValue
-              label="TOTAL:"
-              value={invoice ? `$ ${invoice.total}` : ''}
-              containerStyle={{ width: '33%' }}
-            />
-          </div>
+          { invoice ? invoice?.version === 'v1' ? <InvoiceV1View invoice={invoice as InvoiceV1} /> : <InvoiceV2View invoice={invoice as Invoice} /> : ''}
           <div className="view-invoice-card-item">
             <LabelValue
               label="ESTADO:"
               value={invoice ? <StatusLabel status={invoice.status} /> : ''}
-              containerStyle={{ width: '33%' }}
+              containerStyle={{ width: '50%' }}
             />
-            {invoice && invoice.status === 'PROCESSED' && (
+            {invoice && invoice.status === 'PROCESSED' && (<>
               <LabelValue
                 label="CAE:"
                 value={invoice ? invoice.cae : ''}
-                containerStyle={{ width: '33%' }}
+                containerStyle={{ width: '50%' }}
               />
+               <LabelValue
+                label="VTO DE CAE:"
+                value={(invoice as Invoice)?.caeExpirationDate ? format(parseISO((invoice as Invoice)?.caeExpirationDate!), 'dd/MM/yyyy') : ''}
+                containerStyle={{ width: '50%' }}
+              />
+            </>
             )}
             {invoice && invoice.status === 'REJECTED' && (
               <LabelValue
@@ -150,7 +147,7 @@ const ViewInvoice = () => {
             <SecondaryButton onClick={() => navigate('/')}>
               Volver
             </SecondaryButton>
-            {invoice && invoice.status === 'REJECTED' ? (
+            {invoice && invoice.version=== 'v2' && invoice.status === 'REJECTED' ? (
               <Button
                 onClick={() =>
                   navigate(
@@ -163,7 +160,7 @@ const ViewInvoice = () => {
             ) : (
               <>
                 <Button onClick={handlerPrint}>Imprimir</Button>
-                {invoice?.invoiceType !== InvoiceTypes.NOTA_CREDITO_A &&
+                {invoice?.version === 'v2' && invoice?.invoiceType !== InvoiceTypes.NOTA_CREDITO_A &&
                   invoice?.invoiceType !== InvoiceTypes.NOTA_CREDITO_B &&
                   invoice?.invoiceType !== InvoiceTypes.NOTA_CREDITO_C && (
                     <Button

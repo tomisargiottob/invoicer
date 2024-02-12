@@ -2,6 +2,7 @@
 font-family: Arial, Helvetica, sans-serif;
 width: 447px;
 padding: 5px;
+min-height: 631px;
 }
 
 .pdf-download .borderDiv{
@@ -41,21 +42,17 @@ font-size: 20px;
 
 .pdf-download .invoiceHeaderContent{
 width: 50%;
-padding: 75px 5px 5px 0px;
-display: flex;
-display: -webkit-flex;
-justify-content: center;
--webkit-box-pack: center;
-flex-direction: column;
--webkit-flex-direction: column;
--webkit-gap: 8px;
-gap: 8px;
+padding: 80px 5px 5px 0px;
+display: grid;
+grid-template-rows: 15% 85%;
 border: 1px solid black;
 }
 
 .pdf-download .fromName{
     font-weight: bold;
-    font-size: 20px;
+    font-size: 16px;
+    line-height: 16px;
+    height: 20px;
     margin-left: 20px;
     text-align: center;
 }
@@ -114,13 +111,13 @@ padding-top: 20px;
 }
 
 .pdf-download .tableContainer{
-height: 100px;
+max-height: 200px;
 }
 
 .pdf-download table{
-width: 100%;
-text-align: right;
-font-size: 10px;
+    width: 99%;
+    text-align: right;
+    font-size: 10px;
 }
 
 .pdf-download table thead tr th {
@@ -134,7 +131,12 @@ padding-top: 10px 10px;
 }
 
 .pdf-download .invoiceTotal{
-padding: 10px;
-text-align: right;
-font-size: 10px;
+    padding: 10px;
+    text-align: right;
+    font-size: 10px;
+}
+
+.vat-types{
+    display: grid;
+    grid-template-columns: 85% 15%;
 }

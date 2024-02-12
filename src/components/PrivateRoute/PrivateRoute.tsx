@@ -12,20 +12,27 @@ const PrivateRoute = (props: { children: React.ReactNode }): JSX.Element => {
     const user = useAppSelector((state) => state.user)
     const navigate = useNavigate()
     const dispatch = useDispatch()
-    const getUserInformation = async () => {
-      try {
-        const response = await getUserData(localStorage.getItem('logged_user')!)
-        dispatch(setUser({user: {...response.user, token: response.token}}))
-      } catch (err) {
-        localStorage.remove.Item('logged_user')
-        navigate('/login')
-      }
-    }
+    
     useEffect(()=> {
+      const getUserInformation = async () => {
+        try {
+          const response = await getUserData(localStorage.getItem('logged_user')!)
+          dispatch(setUser({user: {...response.user, token: response.token, paymentRequired: response.paymentRequired, maxCuits: response.maxCuits}}))
+        } catch (err) {
+          localStorage.removeItem('logged_user')
+          navigate('/login')
+        }
+      }
       if(!user.id && isLoggedIn) {
         getUserInformation()
       }
     },[isLoggedIn])
+
+    useEffect(() => {
+      if(user.paymentRequired && location.pathname !== '/profile') {
+        navigate('/profile')
+      }
+    },[location, user])
   
     return isLoggedIn ? (
       <>{children}</>

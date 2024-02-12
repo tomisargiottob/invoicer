@@ -1,0 +1,166 @@
+.pdf-download-v2{
+    font-family: Arial, Helvetica, sans-serif;
+    width: 447px;
+    padding: 5px;
+    min-height: 631px;
+}
+
+.pdf-download-v2 .borderDiv{
+    border: 1px solid black;
+}
+
+.pdf-download-v2 .originalLabel{
+    font-weight: bold;
+    font-size: 14px;
+    display: flex;
+    display: -webkit-flex;
+    justify-content: center;
+    -webkit-justify-content: center;
+    align-items: center;
+}
+
+.pdf-download-v2 .invoiceTypeContainer{
+    font-weight: bold;
+    border: 1px solid black;
+    position: absolute;
+    text-align: center;
+    top: -3;
+    left: 0;
+    margin: 0 auto;
+    right: 0;
+    width: 40px;
+    height: 40px;
+    background-color: white;
+    border-top: 2px solid black;
+}
+
+.pdf-download-v2 .invoiceType{
+    font-size: 20px;
+    margin-bottom: 0px;
+    padding-bottom: 0px;
+    line-height: 20px;
+}
+
+.pdf-download-v2 .invoice-code{
+    font-size: 6px;
+}
+
+.pdf-download-v2 .invoiceHeaderContent{
+    width: 50%;
+    padding: 30px 5px 5px 0px;
+    display: grid;
+    grid-template-rows: 15% 85%;
+    border: 1px solid black;
+    text-overflow:clip;
+}
+
+.pdf-download-v2 .fromName{
+    font-weight: bold;
+    font-size: 10px;
+    line-height: 14px;
+    height: 16px;
+    margin-left: 20px;
+    text-align: center;
+}
+
+.pdf-download-v2 .label {
+    font-weight: bold;
+}
+
+.pdf-download-v2 .label .data{
+    font-weight: lighter;
+}
+
+.pdf-download-v2 .inf {
+    padding-left: 15px;
+    display: flex;
+    display: -webkit-flex;
+    line-height: 14px;
+    flex-direction: column;
+    -webkit-flex-direction: column;
+    flex-flow: column;
+    -webkit-flex-flow: column;
+    font-size: 8px;
+    padding-top: 10px;
+}
+
+.pdf-download-v2 .invoiceHeaderContainer{
+    display: flex;
+    display: -webkit-flex;
+    position: relative;
+}
+
+.pdf-download-v2 .periodContainer{
+    padding: 5px;
+    padding-left: 12px;
+    line-height: 16px;
+    font-size: 8px;
+    display: flex;
+    gap: 40px;
+    display: -webkit-flex;
+}
+.cuit-data {
+    padding: 10px 0px;
+}
+.pdf-download-v2 .cuit-data {
+    display: grid;
+    grid-template-columns: 50% 50%;
+    text-align: left;
+    font-size: 8px;
+}
+
+.pdf-download-v2 .date-period {
+    margin-left: 10px;
+}
+
+.pdf-download-v2 .destinataryInfoContainer{
+    display: flex;
+    display: -webkit-flex;
+    flex-direction: column;
+    padding: 0px 10px;
+    gap: 10px;
+    font-size: 8px;
+}
+
+.pdf-download-v2 .tableContainer{
+    min-height: 200px;
+}
+
+.pdf-download-v2 table{
+    width: 99%;
+    text-align: right;
+    font-size: 6px;
+}
+.pdf-download-v2 .table-description {
+    min-width: 100px;
+    text-align: left !important;
+}
+
+.pdf-download-v2 table thead tr th {
+    outline: 1px solid black;
+    padding: 5px 5px;
+    background-color: rgb(201, 201, 201);
+    text-align: center;
+}
+
+.pdf-download-v2 table tbody tr td{
+    padding-top: 10px 10px;
+}
+
+.pdf-download-v2 .invoice-footer {
+    margin-top: 10px;
+    font-size: 8px;
+    text-align: right;
+    padding-right: 8px;
+}
+
+.pdf-download-v2 .invoiceTotal{
+    text-align: right;
+    font-size: 8px;
+    padding: 8px;
+}
+
+.vat-types{
+    display: grid;
+    grid-template-columns: 85% 15%;
+}

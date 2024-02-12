@@ -30,6 +30,9 @@ import { getInvoices } from '../../requests/invoiceRequests';
 import IBalance from '../../class/Profile/interface/IBalance';
 import { getBalances } from '../../requests/balanceRequests';
 import { format } from 'date-fns';
+import useWindowDimensions from '../../utils/useWindowDimensions';
+import { headers } from './utils';
+import InvoiceV1 from '../../class/Invoice/InvoiceV1';
 
 
 const Home = () => {
@@ -42,11 +45,22 @@ const Home = () => {
   const [loadingInvoices, setLoadingInvoices] = useState(false)
   const [balanceFetched, setBalanceFetched] = useState(false)
   const [userAuthenticated, setUserAuthenticated] = useState(false)
+  const [tableTitles, setTableTitles] = useState(headers)
+  const { height, width } = useWindowDimensions();
 
   const user = useAppSelector((state) => state.user)
   const cuit = useAppSelector((state) => state.cuit)
 
   const dispatch = useDispatch()
+
+  useEffect(() => {
+    if(width < 800) {
+      const mobileTitles = headers.filter((header) => !['description','invoiceType','status'].includes(header.accessor))
+      setTableTitles(mobileTitles)
+    } else {
+      setTableTitles(headers)
+    }
+  },[width])
 
   const loadProfiles = async () => {
     try {
@@ -180,6 +194,7 @@ const Home = () => {
           setSelectedProfile(profile)
           dispatch(setActiveCuitAccount({cuit: profile}))
         }}
+        paymentRequired={user.paymentRequired}
       />
       {
         loading ? <><Spinner /></> :
@@ -191,6 +206,7 @@ const Home = () => {
             }}
           >
             <div
+              className='status-card'
               style={{
                 display: 'flex',
                 justifyContent: 'space-evenly',
@@ -223,6 +239,7 @@ const Home = () => {
             }}
           >
             <div
+              className='status-card'
               style={{
                 display: 'flex',
                 justifyContent: 'space-evenly',
@@ -236,7 +253,7 @@ const Home = () => {
               </div>
               <FontAwesomeIcon
                 icon={faPlusCircle}
-                className='balance-icon'
+                className='balance-icon import-balance-icon'
                 color="#0D658B"
                 size="2x"
                 onClick={() =>
@@ -266,9 +283,10 @@ const Home = () => {
               <Title>Facturas</Title>
               <div className="home-card-title-options">
                 <Button
+                  className="masive-invoice-button"
                   onClick={() =>
                     navigate(
-                      `/importInvoices?profile=${JSON.stringify(selectedProfile)}`
+                      `/importInvoices`
                     )
                   }
                 >
@@ -293,37 +311,12 @@ const Home = () => {
             </div>
             <Table
               loading={loadingInvoices}
-              headers={[
-                { accessor: 'number', title: 'N°', width: '5%' },
-                { accessor: 'date', title: 'FECHA', width: '10%' },
-                // { accessor: 'fullname', title: 'EMISOR', width: '20%' },
-                {
-                  accessor: 'destinatary',
-                  title: 'DESTINATARIO',
-                  width: '20%',
-                },
-                {
-                  accessor: 'description',
-                  title: 'DESCRIPCION',
-  
-                  width: '30%',
-                },
-                { accessor: 'invoiceType', title: 'TIPO', width: '20%' },
-                {
-                  accessor: 'status',
-                  title: 'ESTADO',
-                  width: '10%',
-                },
-                {
-                  accessor: 'visite',
-                  width: 10,
-                  title: '',
-                },
-              ]}
+              headers={tableTitles}
               values={invoicesVisibles.map((invoice) => {
                 const invoiceNumber = invoice._id;
                 return {
                   ...invoice,
+                  description: invoice.version === 'v1' ? (invoice as unknown as InvoiceV1).description : invoice.items.map((item) => item.description).join(', '),
                   visite: (
                     <FontAwesomeIcon
                       icon={faEye}

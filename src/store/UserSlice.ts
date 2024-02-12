@@ -8,6 +8,9 @@ export interface User {
     organization: string,
     role: string,
     token: string,
+    email: string,
+    maxCuits: number,
+    paymentRequired: boolean
 }
 
 export interface UserCuitAccount {
@@ -23,6 +26,9 @@ const initialState: User = {
     role: '',
     token: '',
     cuitAccounts: [],
+    email: '',
+    maxCuits: 0,
+    paymentRequired: false,
 }
 
 export const UserSlice = createSlice({
@@ -35,12 +41,25 @@ export const UserSlice = createSlice({
             state.organization = action.payload.user.organization
             state.role = action.payload.user.role
             state.token = action.payload.user.token
+            state.email = action.payload.user.email
+            state.maxCuits = action.payload.user.maxCuits
+            state.paymentRequired = action.payload.user.paymentRequired
         },
         setUserCuitAccounts:(state, action: PayloadAction<({cuitAccounts: CuitAccount[]})>) => {
             state.cuitAccounts = action.payload.cuitAccounts
+        },
+        unsetUser: (state) => {
+            state.id = initialState.id;
+            state.name = initialState.name
+            state.organization = initialState.organization
+            state.role = initialState.role
+            state.token = initialState.token
+            state.email = initialState.email
+            state.maxCuits = initialState.maxCuits
+            state.paymentRequired = initialState.paymentRequired
         }
     }
 })
 
 export default UserSlice.reducer
-export const { setUser, setUserCuitAccounts  } = UserSlice.actions
+export const { setUser, setUserCuitAccounts, unsetUser } = UserSlice.actions

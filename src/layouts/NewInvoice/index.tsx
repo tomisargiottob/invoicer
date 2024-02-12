@@ -1,5 +1,5 @@
 import './index.css';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import Toastify from 'toastify-js';
 import Button from '../../components/Button';
@@ -22,6 +22,10 @@ import { setCuitBalances, setCuitInvoices } from '../../store/CuitSlice';
 import { useDispatch } from 'react-redux';
 import { getBalances } from '../../requests/balanceRequests';
 import { RegisterTypes, defaultInvoiceType } from '../../class/Profile/types/RegisterTypes';
+import { InvoiceItem } from '../../class/Invoice/interface/IInvoice';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import ItemCreation from './ItemCreation';
 
 const NewInvoice = () => {
   const navigate = useNavigate();
@@ -32,23 +36,34 @@ const NewInvoice = () => {
   const [destinataryDocumentType, setDestinataryDocumentType] =
     useState<ISelectItemProps | null>(null);
   const [destinataryDocument, setDestinataryDocument] = useState('');
-  const [description, setDescription] = useState('');
-  const [units, setUnits] = useState(0);
-  const [unitValue, setUnitValue] = useState(0.0);
-  const [total, setTotal] = useState(0);
   const [errors, setErrors] = useState<Array<string> | null>(null);
   const [disabled, setDisabled] = useState(false);
+  const cuit = useAppSelector((state) => state.cuit)
+
+  const [items, setItems] = useState<any[]>([{
+    id: 0,
+    description: '',
+    iva: cuit.vat || 0,
+    unitValue: 0,
+    units: 0,
+  }])
 
   const user = useAppSelector((state) => state.user)
-  const cuit = useAppSelector((state) => state.cuit)
   const dispatch = useDispatch()
+  useEffect(() => {
+    if(cuit.registerType === RegisterTypes.MONOTRIBUTO && !invoiceType) {
+      setInvoiceType(defaultInvoiceType[cuit.registerType])
+    }
+  },[cuit])
   useEffect(() => {
     const searchInvoiceNumber = async () => {
       try {
-        const data = await getNextInvoiceNumber({user, cuit: cuit.id, invoiceType: invoiceType! || defaultInvoiceType[cuit.registerType]  })
-        setNumber(
-          data.nextInvoiceNumber
-        );
+        if(invoiceType) {
+          const data = await getNextInvoiceNumber({user, cuit: cuit.id, invoiceType: invoiceType || defaultInvoiceType[cuit.registerType]  })
+          setNumber(
+            data.nextInvoiceNumber
+          );
+        }
       } catch (err: any) {
         Toastify({
           text: err.message,
@@ -67,6 +82,12 @@ const NewInvoice = () => {
     }
   }, [invoiceType]);
 
+  const invoiceTotal = useMemo(() => {
+    return items.reduce((total, item) => {
+      total += item.unitValue * item.units
+      return total
+    },0)
+  },[items])
   const addInvoice = async () => {
     try {
       setErrors(null);
@@ -77,12 +98,11 @@ const NewInvoice = () => {
         destinatary,
         destinataryDocument,
         destinataryDocumentType: String(destinataryDocumentType?.value),
-        description,
-        units,
-        unitValue,
-        total,
+        destinataryAddress: '',
+        items,
         invoiceType: invoiceType!,
         status: StatusTypes.PENDING,
+        version: 'v2'
       });
 
       await createInvoice({user, cuit: cuit.id, invoice})
@@ -183,50 +203,19 @@ const NewInvoice = () => {
             </Select>
             <Input
               label="DOCUMENTO DESTINATARIO"
-              containerStyle={{ width: '65%' }}
+              containerStyle={{ width: '45%' }}
               onChange={(event) => {
                 setDestinataryDocument(event.target.value);
               }}
               value={destinataryDocument}
             />
-          </div>
-          <div className="new-invoice-card-body-item">
-            <Input
-              label="DESCRIPCION"
-              containerStyle={{ width: '100%' }}
-              onChange={(event) => {
-                setDescription(event.target.value);
-              }}
-              value={description}
-            />
-          </div>
-          <div className="new-invoice-card-body-item amount-section">
-            <Input
-              label="UNIDADES"
-              containerStyle={{ width: '15%' }}
-              type="number"
-              onChange={(event) => {
-                setUnits(Number(event.target.value));
-                setTotal(Number(event.target.value) * unitValue);
-              }}
-              value={String(units)}
-            />
-            <Input
-              label="VALOR UNITARIO"
-              containerStyle={{ width: '15%' }}
-              type="number"
-              onChange={(event) => {
-                setUnitValue(Number(event.target.value));
-                setTotal(Number(event.target.value) * units);
-              }}
-              value={String(unitValue)}
-            />
             <LabelValue
-              label="TOTAL"
-              value={`$ ${total}`}
-              containerStyle={{ width: '70%' }}
+              label='Total Factura'
+              value={`${invoiceTotal.toLocaleString()} $` }
+              containerStyle={{width: '15%', marginLeft: '50px'}}
             />
           </div>
+          <ItemCreation items={items} setItems={setItems}></ItemCreation>
         </div>
         <div className="new-invoice-card-footer">
           <SecondaryButton onClick={() => navigate('/')}>
