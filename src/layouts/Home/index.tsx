@@ -32,6 +32,7 @@ import { getBalances } from '../../requests/balanceRequests';
 import { format } from 'date-fns';
 import useWindowDimensions from '../../utils/useWindowDimensions';
 import { headers } from './utils';
+import InvoiceV1 from '../../class/Invoice/InvoiceV1';
 
 
 const Home = () => {
@@ -285,7 +286,7 @@ const Home = () => {
                   className="masive-invoice-button"
                   onClick={() =>
                     navigate(
-                      `/importInvoices?profile=${JSON.stringify(selectedProfile)}`
+                      `/importInvoices`
                     )
                   }
                 >
@@ -315,6 +316,7 @@ const Home = () => {
                 const invoiceNumber = invoice._id;
                 return {
                   ...invoice,
+                  description: invoice.version === 'v1' ? (invoice as unknown as InvoiceV1).description : invoice.items.map((item) => item.description).join(', '),
                   visite: (
                     <FontAwesomeIcon
                       icon={faEye}

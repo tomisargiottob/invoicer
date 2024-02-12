@@ -19,9 +19,25 @@
 
 .new-invoice-card-body-item {
   display: flex;
+  /* flex-direction: row; */
+  flex-wrap: wrap;
+}
+
+.invoice-item {
+  width: 100%;
+  display: flex;
   justify-content: space-between;
   gap: 15px;
   padding: 10px 0px 0px 0px;
+}
+.remove-item{
+  height: 30px;
+  position: relative;
+  top: 50px;
+  color: red;
+  border: none;
+  cursor: pointer;
+  background-color: white;
 }
 
 .new-invoice-card-footer {
@@ -30,10 +46,16 @@
   justify-content: space-around;
 }
 
+.add-item {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
 .new-invoice-card-container .card-content{
   padding: 25px;
 }
 
 .amount-section {
-  gap: 100px;
+  gap: 20px;
 }

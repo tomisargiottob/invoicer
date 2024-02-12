@@ -19,7 +19,7 @@ const PrivateRoute = (props: { children: React.ReactNode }): JSX.Element => {
           const response = await getUserData(localStorage.getItem('logged_user')!)
           dispatch(setUser({user: {...response.user, token: response.token, paymentRequired: response.paymentRequired, maxCuits: response.maxCuits}}))
         } catch (err) {
-          localStorage.remove.Item('logged_user')
+          localStorage.removeItem('logged_user')
           navigate('/login')
         }
       }

@@ -20,10 +20,11 @@ import { createInvoice, getInvoices, getNextInvoiceNumber } from '../../requests
 import { getBalances } from '../../requests/balanceRequests';
 import { useDispatch } from 'react-redux';
 import Invoice from '../../class/Invoice/Invoice';
-import { addPendingInvoices, setCuitBalances, setCuitInvoices, updateInvoiceStatus } from '../../store/CuitSlice';
+import { setCuitBalances, setCuitInvoices, updateInvoiceStatus } from '../../store/CuitSlice';
 import {v4 as uuid} from 'uuid'
 import { RegisterTypes, defaultInvoiceType, registerTypeInvoices } from '../../class/Profile/types/RegisterTypes';
 import InvoiceTypes from '../../class/Invoice/types/InvoiceTypes';
+import { InvoiceItem, ItemProps } from '../../class/Invoice/interface/IInvoice';
 
 const ImportInvoices = () => {
   const navigate = useNavigate();
@@ -37,10 +38,9 @@ const ImportInvoices = () => {
       FACTURA_TIPO: InvoiceTypes;
       DNI: string;
       DIRECCION: string;
+      PERIODO_DESDE?: number | Date,
+      PERIODO_HASTA?: number | Date,
       DESCRIPCION: string;
-      UNIDADES: string;
-      UNITARIO: string;
-      TOTAL: string;
     }>
   >([]);
   const dispatch = useDispatch()
@@ -96,6 +96,8 @@ const ImportInvoices = () => {
     try {
       dataExcel.forEach((row) => {
         row.FECHA = typeof row.FECHA === 'number' ? ExcelDateToJSDate(row.FECHA) : new Date()
+        row.PERIODO_DESDE = typeof row.PERIODO_DESDE === 'number' ? ExcelDateToJSDate(row.PERIODO_DESDE) : undefined
+        row.PERIODO_HASTA = typeof row.PERIODO_HASTA === 'number' ? ExcelDateToJSDate(row.PERIODO_HASTA) : undefined
       })
       dataExcel.sort((prev, next) => {
         const prevValue = (prev.FECHA as Date).getTime()
@@ -110,24 +112,40 @@ const ImportInvoices = () => {
         }
       })
       const dataFormatted = dataExcel.reduce((invoices: {[k:string]:Array<Invoice>}, row) => {
-        const invoiceType = row.FACTURA_TIPO || defaultInvoiceType[cuit.registerType]
+        const invoiceType = (row.FACTURA_TIPO || defaultInvoiceType[cuit.registerType]).toUpperCase()
         if(!invoices[invoiceType]) {
           invoices[invoiceType] = []
         }
         let nextNumber = +number[invoiceType] + invoices[invoiceType]?.length;
+        const columns = Object.keys(row)
+        const items = columns.reduce((items: {[k:string]: InvoiceItem}, column) => {
+          const columnSplit = column.match(/(descripcion|unidades|iva|unitario)_(\d+)/i)
+          if(!columnSplit || !columnSplit[2] || !parseInt(columnSplit[2]) ) return items
+          if (!items[columnSplit[2]]) items[columnSplit[2]] = {}
+          const propName = ItemProps[columnSplit[1] as 'DESCRIPCION']
+          items[columnSplit[2]][propName] = row[column as 'DESCRIPCION']
+          return items
+        },{})
+        const parsedItems = Object.values(items).map((item) => {
+          if(item.iva === undefined) {
+            item.iva = cuit.vat
+          }
+          return item
+        })
         invoices[invoiceType].push(new Invoice({
           _id: uuid(),
           number: nextNumber,
           date: row.FECHA as Date,
           invoiceType: row.FACTURA_TIPO || defaultInvoiceType[cuit.registerType],
+          startDate: row.PERIODO_DESDE as Date,
+          endDate: row.PERIODO_HASTA as Date,
           status: StatusTypes.PENDING,
           destinatary: row.NOMBRE_COMPLETO,
           destinataryDocument: String(row.DNI),
           destinataryDocumentType: String(row.DNI).length === 8 ? '96' : '80',
-          description: row.DESCRIPCION,
-          units: Number(row.UNIDADES),
-          unitValue: Number(row.UNITARIO),
-          total: Number(row.UNIDADES) * Number(row.UNITARIO),
+          destinataryAddress: row.DIRECCION,
+          items: parsedItems,
+          version: 'v2'
         }));
         return invoices
       },{});
@@ -163,17 +181,7 @@ const ImportInvoices = () => {
   };
 
   const validateExcel = (
-    items: Array<{
-      FECHA: number;
-      NOMBRE_COMPLETO: string;
-      FACTURA_TIPO: 'A' | 'B';
-      DNI: string;
-      DIRECCION: string;
-      DESCRIPCION: string;
-      UNIDADES: string;
-      UNITARIO: string;
-      TOTAL: string;
-    }>
+    items: Array<any>
   ): Array<string> => {
     setErrors(null);
     const errorsExcel: Array<string> = [];
@@ -181,6 +189,13 @@ const ImportInvoices = () => {
     maxLimit.setDate(maxLimit.getDate() + 10);
     const minLimit = new Date()
     minLimit.setDate(minLimit.getDate() - 10);
+    const existentColumns = Object.keys(items[0]).reduce((allItems: string[], column) => {
+      const columnSplit = column.match(/(descripcion|unidades|iva|unitario)_(\d+)/gi)
+      if(!columnSplit || !columnSplit[2] || !parseInt(columnSplit[2]) ) return allItems
+      if (allItems.includes(columnSplit[2])) return allItems
+      allItems.push(columnSplit[2])
+      return allItems
+    }, [])
     items.map((row, index) => {
       const rowDate = ExcelDateToJSDate(row.FECHA).getTime()
       if(!row.FACTURA_TIPO && cuit.registerType === RegisterTypes.RESPONSABLE_INSCRIPTO) {
@@ -194,16 +209,25 @@ const ImportInvoices = () => {
       if (!row.NOMBRE_COMPLETO)
         errorsExcel.push(`Falta NOMBRE_COMPLETO en la linea ${index + 1}`);
       if (!row.DNI) errorsExcel.push(`Falta DNI en la linea ${index + 1}`);
-      if (!row.DESCRIPCION)
-        errorsExcel.push(`Falta DESCRIPCION en la linea ${index + 1}`);
-      if (!row.UNIDADES)
-        errorsExcel.push(`Falta UNIDADES en la linea ${index + 1}`);
-      if (Number.isNaN(Number(row.UNIDADES)))
-        errorsExcel.push(`UNIDADES debe ser numerico en la linea ${index + 1}`);
-      if (!row.UNITARIO)
-        errorsExcel.push(`Falta UNITARIO en la linea ${index + 1}`);
-      if (Number.isNaN(Number(row.UNITARIO)))
-        errorsExcel.push(`UNITARIO debe ser numerico en la linea ${index + 1}`);
+      for (const unitNumber of existentColumns) {
+        if(
+          !row[`DESCRIPCION_${unitNumber}`] && 
+          !row[`UNIDADES_${unitNumber}`] &&
+          !row[`UNITARIO_${unitNumber}`] && 
+          !row[`IVA_${unitNumber}`]) continue
+        if (!row[`DESCRIPCION_${unitNumber}`])
+          errorsExcel.push(`Falta DESCRIPCION_${unitNumber} en la linea ${index + 1}`);
+        if (!row[`UNIDADES_${unitNumber}`])
+          errorsExcel.push(`Falta UNIDADES_${unitNumber} en la linea ${index + 1}`);
+        if (!row[`IVA_${unitNumber}`])
+          errorsExcel.push(`Falta IVA_${unitNumber} en la linea ${index + 1}`);
+        if (Number.isNaN(Number(row[`UNIDADES_${unitNumber}`])))
+          errorsExcel.push(`UNIDADES_${unitNumber} debe ser numerico en la linea ${index + 1}`);
+        if (!row[`UNITARIO_${unitNumber}`])
+          errorsExcel.push(`Falta UNITARIO_${unitNumber} en la linea ${index + 1}`);
+        if (Number.isNaN(Number(row[`UNITARIO_${unitNumber}`])))
+          errorsExcel.push(`UNITARIO_${unitNumber} debe ser numerico en la linea ${index + 1}`);
+      }
       return items;
     });
 
@@ -232,7 +256,7 @@ const ImportInvoices = () => {
               data = data.concat(
                 XLSX.utils.sheet_to_json(workbook.Sheets[sheet])
               );
-              // break; // If you only take the first table, uncomment this line
+              break; // If you only take the first table, uncomment this line
             }
           }
           if (data.length <= 0) {
@@ -285,10 +309,6 @@ const ImportInvoices = () => {
           <div className="masive-invoice-card-body-item">
             <Dropzone
               onDrop={onImportExcel}
-              // accept= {{
-              //   'application/vnd.ms-excel': [],
-              //   'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':[]
-              // }}
             >
               {({
                 getRootProps,

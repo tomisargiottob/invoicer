@@ -1,9 +1,9 @@
-import Invoice from "../../class/Invoice/Invoice";
 import { registerTypesLabels } from "../../class/Profile/types/RegisterTypes";
 import { CuitAccount } from "../../store/CuitSlice";
 import { convertDateToDDMMAAAASeparated2 } from "../../utils/utils";
 import { lastDayOfMonth } from "date-fns";
 import './index.css';
+import InvoiceV1 from "../../class/Invoice/InvoiceV1";
 
 export const invoiceTypes = {
   C: 11,
@@ -23,7 +23,7 @@ const invoiceCodes = {
   NOTA_CREDITO_C: 'C',
 }
 
-function PDFDownload({invoice, cuit}: {invoice: Invoice, cuit: CuitAccount}) {
+function PDFDownload({invoice, cuit}: {invoice: InvoiceV1, cuit: CuitAccount}) {
     const invoiceDate = new Date(invoice.date)
     const perdesDate = new Date(
         invoiceDate.getFullYear(),

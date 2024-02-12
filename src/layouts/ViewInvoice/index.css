@@ -22,6 +22,17 @@
   margin: 35px 0px;
 }
 
+.multiple-items{
+  display: grid;
+  grid-template-columns: 35% 10% 20% 10% 10% 15%;
+}
+
+.multiple-items-results{
+  display: grid;
+  margin-top: 20px;
+  grid-template-columns: 20% 20% 20% 20% 20%;
+}
+
 .view-invoice-card-footer{
   margin-top: 20px;
   display: flex;
