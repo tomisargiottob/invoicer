@@ -110,6 +110,7 @@ const EditExistInvoice = () => {
         destinatary,
         destinataryDocument,
         destinataryDocumentType: String(destinataryDocumentType?.value),
+        destinataryAddress: '',
         items,
         status: StatusTypes.PENDING,
         asociatedInvoice: cuit.invoices.find((invoice) => invoice._id === cuit.currentInvoice)?.number,

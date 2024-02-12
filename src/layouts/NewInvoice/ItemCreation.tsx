@@ -94,15 +94,14 @@ const ItemCreation = ({items, setItems}: {items: InvoiceItem[], setItems: Dispat
             </Select>
             <LabelValue
               label='MONTO IVA'
-              value={isNaN(item.iva as number) ? '0 $' : `${((item.units || 0) * (item.unitValue || 0) * ( 1 - item.iva!/100 ) * item.iva!/100).toLocaleString()} $` }
+              value={isNaN(item.iva as number) ? '0 $' : `${((item.units || 0) * (item.unitValue || 0) * ( 1 - +item.iva!/100 ) * +item.iva!/100).toLocaleString()} $` }
               containerStyle={{width: '20%'}}
-            ></LabelValue>
+            />
             <LabelValue
               label='Total'
               value={`${((item.units || 0) * (item.unitValue || 0)).toLocaleString()} $` }
               containerStyle={{width: '15%'}}
-            >  
-            </LabelValue>
+            />  
             <button className="remove-item" onClick={()=>handleRemoveItem(idx)}>
               <FontAwesomeIcon icon={faTrash}/>
             </button>
