@@ -209,6 +209,8 @@ const ImportInvoices = () => {
       if (!row.NOMBRE_COMPLETO)
         errorsExcel.push(`Falta NOMBRE_COMPLETO en la linea ${index + 1}`);
       if (!row.DNI) errorsExcel.push(`Falta DNI en la linea ${index + 1}`);
+
+      let itemsAmount = 0
       for (const unitNumber of existentColumns) {
         if(
           !row[`DESCRIPCION_${unitNumber}`] && 
@@ -227,6 +229,10 @@ const ImportInvoices = () => {
           errorsExcel.push(`Falta UNITARIO_${unitNumber} en la linea ${index + 1}`);
         if (Number.isNaN(Number(row[`UNITARIO_${unitNumber}`])))
           errorsExcel.push(`UNITARIO_${unitNumber} debe ser numerico en la linea ${index + 1}`);
+        itemsAmount +=1
+      }
+      if(!itemsAmount) {
+        errorsExcel.push(`La linea ${index + 1} debe tener al menos un item cargado`);
       }
       return items;
     });
