@@ -66,7 +66,7 @@ function PDFDownloadV2({invoice, cuit}: {invoice: Invoice, cuit: CuitAccount}) {
       }
       if (!amount.iva[item.iva!]) amount.iva[item.iva!] = 0
       amount.iva[item.iva!] += item.units! * item.unitValue! * (vatValues[item.iva!] / 100)
-      amount.grossAmount += Math.round((item.units! * item.unitValue! * ((100 - vatValues[item.iva!]) / 100)*100))/100
+      amount.grossAmount += Math.round((item.units! * item.unitValue! * 100/(100 + +vatValues[item.iva!])*100))/100
       return amount
   }, {iva: {}, grossAmount: 0, netAmount: 0, excentAmount: 0, notTaxedAmount: 0})
     return (
