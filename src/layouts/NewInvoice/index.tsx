@@ -31,7 +31,7 @@ const NewInvoice = () => {
   const navigate = useNavigate();
   const [number, setNumber] = useState(0);
   const [invoiceType, setInvoiceType] = useState<InvoiceTypes | null>(null)
-  const [date, setDate] = useState<Date>();
+  const [date, setDate] = useState<Date>(new Date());
   const [destinatary, setDestinatary] = useState('');
   const [destinataryDocumentType, setDestinataryDocumentType] =
     useState<ISelectItemProps | null>(null);
@@ -121,7 +121,6 @@ const NewInvoice = () => {
       }
     }
   };
-
   return (
     <div className="new-invoice-card-container">
       <Card>
@@ -135,40 +134,6 @@ const NewInvoice = () => {
               value={number.toString().padStart(8, '0')}
               containerStyle={{ width: '20%' }}
             />
-            { cuit.registerType === RegisterTypes.RESPONSABLE_INSCRIPTO ? <Select
-                label="TIPO"
-                items={[
-                  { value: InvoiceTypes.A, message: 'Factura A' },
-                  { value: InvoiceTypes.B, message: 'Factura B' },
-                ]}
-                containerStyle={{ width: '20%' }}
-                onSelect={(selected: ISelectItemProps) => {
-                  setInvoiceType(selected.value as InvoiceTypes);
-                }}
-              >
-              {invoiceType ? InvoiceTypeMessage(
-                invoiceType
-              ) : 'SELECCIONAR'}
-            </Select> :
-            <LabelValue
-              label="TIPO"
-              value={InvoiceTypeMessage(
-                InvoiceTypes.C
-              )}
-              containerStyle={{ width: '20%' }}
-            />
-            }
-            <Input
-              label="FECHA"
-              containerStyle={{ width: '80%' }}
-              type="date"
-              onChange={(event) => {
-                const dateInput = new Date(event.target.value);
-                setDate(dateInput);
-              }}
-            />
-          </div>
-          <div className="new-invoice-card-body-item">
             <LabelValue
               label="EMISOR"
               containerStyle={{ width: '30%' }}
@@ -179,13 +144,48 @@ const NewInvoice = () => {
               })`}
             />
             <Input
-              label="DESTINATARIO"
-              containerStyle={{ width: '65%' }}
+              label="FECHA"
+              containerStyle={{ width: '50%' }}
+              type="date"
+              value={date.toISOString().substring(0, 10)}
               onChange={(event) => {
-                setDestinatary(event.target.value);
+                const dateInput = new Date(event.target.value);
+                setDate(dateInput);
               }}
-              value={destinatary}
             />
+          </div>
+          <div className="new-invoice-card-body-item">
+              { cuit.registerType === RegisterTypes.RESPONSABLE_INSCRIPTO ? <Select
+                  label="TIPO"
+                  items={[
+                    { value: InvoiceTypes.A, message: 'Factura A' },
+                    { value: InvoiceTypes.B, message: 'Factura B' },
+                  ]}
+                  containerStyle={{ width: '20%' }}
+                  onSelect={(selected: ISelectItemProps) => {
+                    setInvoiceType(selected.value as InvoiceTypes);
+                  }}
+                >
+                {invoiceType ? InvoiceTypeMessage(
+                  invoiceType
+                ) : 'SELECCIONAR'}
+              </Select> :
+              <LabelValue
+                label="TIPO"
+                value={InvoiceTypeMessage(
+                  InvoiceTypes.C
+                )}
+                containerStyle={{ width: '20%' }}
+              />
+              }
+              <Input
+                label="DESTINATARIO"
+                containerStyle={{ width: '50%' }}
+                onChange={(event) => {
+                  setDestinatary(event.target.value);
+                }}
+                value={destinatary}
+              />
           </div>
           <div className="new-invoice-card-body-item">
             <Select
@@ -203,7 +203,7 @@ const NewInvoice = () => {
             </Select>
             <Input
               label="DOCUMENTO DESTINATARIO"
-              containerStyle={{ width: '45%' }}
+              containerStyle={{ width: '30%' }}
               onChange={(event) => {
                 setDestinataryDocument(event.target.value);
               }}
