@@ -4,6 +4,7 @@ import { convertDateToDDMMAAAASeparated2 } from "../../utils/utils";
 import './pdfDownloadV2Styles.css';
 import Invoice from "../../class/Invoice/Invoice";
 import { format, parseISO } from "date-fns";
+import { InvoiceItem } from "../../class/Invoice/interface/IInvoice";
 
 export const invoiceTypes = {
   C: 11,
@@ -36,6 +37,32 @@ export const vatValues: {[k:string]: number} = {
 
 const copies = ['ORIGINAL', 'DUPLICADO', 'TRIPLICADO']
 
+const roundDecimals = (value: number, decimals: number) => {
+  return Math.round(value * Math.pow(10, decimals)) / Math.pow(10, decimals)
+}
+
+const getGrossTotalValue = (isInvoiceA: boolean, item: InvoiceItem) => {
+  return item.units! * getProductValue(isInvoiceA, item)
+}
+
+export const getProductIva = (isInvoiceA: boolean, item: InvoiceItem) => {
+  const itemGrossValue = getProductValue(isInvoiceA, item)
+  return roundDecimals((item.units! * itemGrossValue * (vatValues[item.iva!] / 100)),2)
+}
+
+const getProductValue = (isInvoiceA: boolean, item: InvoiceItem) => {
+  if (!isInvoiceA) return item.unitValue!
+  return item.unitValue! * 1/(1 + +vatValues[item.iva!]/100)
+
+}
+
+const getAllProductsValue = (isInvoiceA: boolean, item: InvoiceItem) => {
+  const itemValue = getProductValue(isInvoiceA, item)
+  if(!isInvoiceA) return roundDecimals(item.units! * itemValue, 2)
+
+  return roundDecimals(item.units! * itemValue, 2)
+}
+
 const transformDigitNumber = (number: number, digits: number, fill=0) => {
   const currentLength = number.toString().length
   const missingNumbers = digits - currentLength
@@ -53,6 +80,8 @@ function PDFDownloadV2({invoice, cuit}: {invoice: Invoice, cuit: CuitAccount}) {
       invoice.invoiceType === 'C'
         ? 'FACTURA'
         : 'NOTA CREDITO'
+    
+    const isInvoiceA = invoice.invoiceType === 'A'
 
     const total = invoice.items.reduce((amount: {iva: {[k: string]: number}, grossAmount: number, netAmount: number, excentAmount: number, notTaxedAmount: number}, item) => {
       amount.netAmount += item.units! * item.unitValue!
@@ -65,10 +94,11 @@ function PDFDownloadV2({invoice, cuit}: {invoice: Invoice, cuit: CuitAccount}) {
         return amount
       }
       if (!amount.iva[item.iva!]) amount.iva[item.iva!] = 0
-      amount.iva[item.iva!] += item.units! * item.unitValue! * (vatValues[item.iva!] / 100)
-      amount.grossAmount += Math.round((item.units! * item.unitValue! * 100/(100 + +vatValues[item.iva!])*100))/100
+      amount.iva[item.iva!] += getProductIva(isInvoiceA,item)
+      amount.grossAmount += getGrossTotalValue(isInvoiceA, item)
       return amount
-  }, {iva: {}, grossAmount: 0, netAmount: 0, excentAmount: 0, notTaxedAmount: 0})
+    }, {iva: {}, grossAmount: 0, netAmount: 0, excentAmount: 0, notTaxedAmount: 0})
+
     return (
       <>
         {copies.map((copy) => {
@@ -136,7 +166,7 @@ function PDFDownloadV2({invoice, cuit}: {invoice: Invoice, cuit: CuitAccount}) {
                       <th>% Bonif</th>
                       <th>Imp. Bonif.</th>
                       <th>Subtotal</th>
-                      {invoice.invoiceType === 'A' && (
+                      {isInvoiceA && (
                         <>
                           <th>Alicuota IVA</th>
                           <th>Subtotal c/IVA</th>
@@ -152,14 +182,14 @@ function PDFDownloadV2({invoice, cuit}: {invoice: Invoice, cuit: CuitAccount}) {
                           <td className="table-description">{item.description}</td>
                           <td>{item.units}</td>
                           <td>unidades</td>
-                          <td>{Number(item.unitValue! * (invoice.invoiceType === 'A' ? 100/(100 + +vatValues[item.iva!]) : 1)).toFixed(2)}</td>
+                          <td>{roundDecimals(getProductValue(isInvoiceA, item),2).toLocaleString('es')}</td>
                           <td>0,00</td>
                           <td>0,00</td>
-                          <td>{(+item.units! * +(item.unitValue! * (invoice.invoiceType === 'A' ? 100/(100 + +vatValues[item.iva!]) : 1))).toFixed(2)}</td>
-                          {invoice.invoiceType === 'A' && (
+                          <td>{getAllProductsValue(isInvoiceA, item).toLocaleString('es')}</td>
+                          {isInvoiceA && (
                             <>
                               <td>{isNaN(item.iva! as number) ? item.iva : `${item.iva}%`}</td>
-                              <td>{+item.units! * +item.unitValue!}</td>
+                              <td>{(+item.units! * +item.unitValue!).toLocaleString('es')}</td>
                             </>
                           )}
                         </tr>
@@ -171,20 +201,20 @@ function PDFDownloadV2({invoice, cuit}: {invoice: Invoice, cuit: CuitAccount}) {
               <div className="borderDiv invoiceTotal vat-description">
                 <div className="vat-types">
                   {['A', 'NOTA_CREDITO_A'].includes(invoice.invoiceType) ? (<>
-                      <div className="label">Importe Exento: </div><div>$ {total.excentAmount}</div>
-                      <div className="label">Importe No gravado: </div><div>$ {total.notTaxedAmount}</div>
-                      <div className="label">Importe Neto gravado: </div><div>$ {total.grossAmount}</div>
+                      <div className="label">Importe Exento: </div><div>$ {total.excentAmount?.toLocaleString('es')}</div>
+                      <div className="label">Importe No gravado: </div><div>$ {total.notTaxedAmount?.toLocaleString('es')}</div>
+                      <div className="label">Importe Neto gravado: </div><div>$ {total.grossAmount?.toLocaleString('es')}</div>
                       <div className="label">Importe otros tributos: </div> <div>$ 0</div>
                       {Object.entries(total.iva).map(([ivaAmount, ivaValue]) => (
                         <>
-                          <div className="label" key={ivaAmount}>IVA {ivaAmount}%: </div> <div>$ {ivaValue}</div>
+                          <div className="label" key={ivaAmount}>IVA {ivaAmount}%: </div> <div>$ {ivaValue?.toLocaleString('es')}</div>
                         </>
                       ))}
                     </>) : (<>
-                      <div className="label">Subtotal: </div><div>$ {total.netAmount}</div>
+                      <div className="label">Subtotal: </div><div>$ {total.netAmount.toLocaleString('es')}</div>
                       <div className="label">Importe otros tributos: </div> <div>$ 0</div>
                     </>)}
-                  <div className="label">Importe total: </div> <div>$ {total.netAmount}</div>
+                  <div className="label">Importe total: </div> <div>$ {roundDecimals(total.netAmount, 2).toLocaleString('es')}</div>
                 </div>
               </div>
               <div className="invoice-footer">
